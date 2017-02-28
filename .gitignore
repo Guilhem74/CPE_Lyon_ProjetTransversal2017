@@ -218,4 +218,6 @@ pip-log.txt
 #Uvision4
 *.OBJ
 *.LST
+.OBJ
+.LST
 
