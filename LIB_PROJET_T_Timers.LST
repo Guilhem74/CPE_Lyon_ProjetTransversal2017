@@ -1,0 +1,138 @@
+C51 COMPILER V9.52.0.0   LIB_PROJET_T_TIMERS                                               02/28/2017 09:56:15 PAGE 1   
+
+
+C51 COMPILER V9.52.0.0, COMPILATION OF MODULE LIB_PROJET_T_TIMERS
+OBJECT MODULE PLACED IN LIB_PROJET_T_Timers.OBJ
+COMPILER INVOKED BY: D:\Programmes\Keil\C51\BIN\C51.EXE LIB_PROJET_T_Timers.c BROWSE DEBUG OBJECTEXTEND TABS(2)
+
+line level    source
+
+   1          /*---------------------------------------------------------------------------
+   2          ;
+   3          ;
+   4          ;
+   5          ;
+   6          ;   FILE NAME   : LIB_BSE_Timers
+   7          ;   TARGET MCUs : C8051F020, 
+   8          ;   DESCRIPTION : Fonctions Bas niveau pour le TP EMBARQUE
+   9          ;
+  10          ;   REVISION 1.0
+  11          ;
+  12          ;---------------------------------------------------------------------------*/
+  13          //-------------------------------------------------------------------------
+  14          // Includes
+  15          //------------------------------------------------------------------------------------
+  16          #include <c8051f020.h>                    // SFR declarations
+  17          #include "LIB_PROJET_T_Timers.h"
+  18          
+  19          unsigned char RTC_Centieme=0;
+  20          unsigned char RTC_Secondes=0;
+  21          unsigned char RTC_Minutes=0;
+  22          unsigned char RTC_Heures=0;
+  23          //*****************************************************************************  
+  24          //CFG_Global
+  25          //
+  26          //   Cette fonction a pour but de regrouper les fonctions de configurations des Timers.
+  27          // 
+  28          //*****************************************************************************
+  29          
+  30          void CFG_Timers(void)
+  31          {
+  32   1        Config_Timer2();
+  33   1        Config_Timer1();
+  34   1      }
+  35          void Config_Timer2(void)
+  36          {
+  37   1        CKCON&=0xDF;//Divide system clock by 12
+  38   1        TF2=0;
+  39   1        EXF2=0;
+  40   1        EXEN2=0;
+  41   1        CT2=0;
+  42   1        RCLK0=0;
+  43   1        TCLK0=0;
+  44   1        CPRL2=0;
+  45   1        RCAP2L=0xff;
+  46   1        RCAP2H=0xDB;
+  47   1        TL2=0xff;
+  48   1        TH2=0xff;
+  49   1        TR2=1;
+  50   1        PT2=1;
+  51   1        ET2=1;
+  52   1      }
+  53          
+  54          void Config_Timer1(void)
+  55          {
+C51 COMPILER V9.52.0.0   LIB_PROJET_T_TIMERS                                               02/28/2017 09:56:15 PAGE 2   
+
+  56   1        CKCON|=(0x10); //Utilisation de l'horloge système
+  57   1        ET1=0; //On désactive les demandes d'interruption du Timer 1
+  58   1        TF1=0; //RAZ du flag 
+  59   1        TMOD&=0x2f; //Timer 1 autoreload, 8bits et independant de /INT0
+  60   1        TMOD|=0x20; 
+  61   1        TH1=0xf4; //Baud Rate = 115200 (Système 22.1184MHZ)
+  62   1        TL1=TH1; //On intitialise le timer 1 pour qu'il commence au bon endroit
+  63   1        
+  64   1        TR1=1; //Activation Timer 1
+  65   1        
+  66   1      }
+  67          /*
+  68          void Horloge_RTC(void)
+  69          {
+  70          
+  71            static char t=0;
+  72            if(t==1)
+  73            {//10ms
+  74              RTC_Centieme++;;//+ 10ms
+  75              t=0;
+  76            }
+  77            else
+  78            {//5ms
+  79              t=1;
+  80            }
+  81            if(RTC_Centieme==100)//Quand on est a 100*10 ms -> 1s
+  82            {
+  83              RTC_Secondes=RTC_Secondes+1;
+  84              RTC_Centieme=0;
+  85            }
+  86            if(RTC_Secondes==60)
+  87            {
+  88              RTC_Minutes=RTC_Minutes+1;
+  89              RTC_Secondes=0;
+  90            }
+  91            if(RTC_Minutes==60)
+  92            {
+  93              RTC_Heures=RTC_Heures+1;
+  94              RTC_Minutes=0;
+  95            }
+  96            if(RTC_Heures==24)
+  97            {
+  98              clear_RTC();
+  99            }
+ 100          }
+ 101          void clear_RTC(void)
+ 102          {
+ 103            RTC_Centieme=0;
+ 104            RTC_Secondes=0;
+ 105            RTC_Minutes=0;
+ 106            RTC_Heures=0;
+ 107          }
+ 108          unsigned long int Conversion_horloge_en_centiemes()
+ 109          {
+ 110              return RTC_Centieme+RTC_Secondes*100+RTC_Minutes*6000+RTC_Heures*360000;
+ 111          }*/
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     64    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V9.52.0.0   LIB_PROJET_T_TIMERS                                               02/28/2017 09:56:15 PAGE 3   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      4    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

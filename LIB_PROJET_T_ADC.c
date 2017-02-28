@@ -14,7 +14,7 @@
 // Includes
 //------------------------------------------------------------------------------------
 #include <c8051f020.h>                    // SFR declarations
-#include "LIB_BSE_ADC.h" 
+#include "LIB_PROJET_T_ADC.h" 
 //-----------------------------------------------------------------------------
 // Function PROTOTYPES
 //-----------------------------------------------------------------------------
@@ -39,7 +39,7 @@ void CFG_ADC0(void)
 	AD0INT=0; //ADC0 pret
 	
 }
-void SET_AD0BUSY(void)
+/*void SET_AD0BUSY(void)
 {
 	AD0BUSY=1;
 }
@@ -59,4 +59,4 @@ void CLEAR_ADC_Flag(void)
 //	
 //	AD0INT=0;//raz le flag
 //	return ADC0H; 
-//}
+//}*/

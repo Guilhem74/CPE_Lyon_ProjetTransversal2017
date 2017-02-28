@@ -11,15 +11,15 @@
 ;
 ;---------------------------------------------------------------------------*/
 
-#ifndef __LIB_BSE_Reset__
-#define __LIB_BSE_Reset__
+#ifndef __LIB_PROJET_T_Reset__
+#define __LIB_PROJET_T_Reset__
 //*****************************************************************************	 
 //CFG_Reset
 //
 //	 Cette fonction a pour but de regrouper les fonctions de configurations des resets.
 // 
 //*****************************************************************************
-void CFG_Reset(void);
+void CFG_RESET(void);
 
 //*****************************************************************************	 
 //Disable_Watchdog

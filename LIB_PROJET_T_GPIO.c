@@ -14,9 +14,9 @@
 // Includes
 //------------------------------------------------------------------------------------
                   // SFR declarations
-#include "LIB_BSE_GPIO.h"
+#include "LIB_PROJET_T_GPIO.h"
 #include <c8051f020.h> 
-#include "Declarations_GPIO_BSE.h" 
+#include "Declaration_GPIO.h" 
 #include <intrins.h>
 
 //------------------------------------------------------------------------------
@@ -52,7 +52,7 @@ void Set_GPIO(void)
 	P2MDOUT&=0x7D;//P2.2 P2.7 en drain ouvert
 	P1MDOUT&=0xFB;//P1.2 en drain ouvert 
 	P0MDOUT&=0xFC;
-	P0MDOUT|=0x01;*/
+	P0MDOUT|=0x01;
 
 	//Déclarations
 	XBR0|=0x7F;
@@ -69,7 +69,7 @@ void Enable_Crossbar(void)
 {
 	XBR2 |=0x40;
 }
-
+/*
 void Pulse_P20(void)
 {
 	P2__0=1;
@@ -129,4 +129,4 @@ void SET_P3_5(void)
 void UNSET_P3_5(void)
 {
 	P3__5=0;
-}
+}*/

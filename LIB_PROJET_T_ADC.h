@@ -10,8 +10,8 @@
 ; 	REVISION 1.0
 ;
 ;---------------------------------------------------------------------------*/
-#ifndef __LIB_BSE_ADC__
-#define __LIB_BSE_ADC__
+#ifndef __LIB_PROJET_T_ADC__
+#define __LIB_PROJET_T_ADC__
 void CFG_ADC(void);
 void CFG_VREF(void);
 

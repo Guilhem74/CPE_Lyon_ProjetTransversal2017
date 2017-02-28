@@ -10,8 +10,8 @@
 ; 	REVISION 1.0
 ;
 ;---------------------------------------------------------------------------*/
-#ifndef LIB_BSE_Config_Globale
-#define LIB_BSE_Config_Globale
+#ifndef LIB_PROJET_T_Config_Globale
+#define LIB_PROJET_T_Config_Globale
 //*****************************************************************************	 
 //Init_Device
 //
@@ -19,5 +19,5 @@
 // 
 //*****************************************************************************
 void Init_Device(void);
-#include "LIB_BSE_UART.h" 
+
 #endif

@@ -16,15 +16,14 @@
 // Includes
 //------------------------------------------------------------------------------------
 #include <c8051f020.h>                    // SFR declarations
-#include "LIB_BSE_DAC.h"
-#include "LIB_BSE_Config_Globale.h"
-#include "LIB_BSE_GPIO.h"  
-#include "LIB_BSE_INT_Ext.h"  
-#include "LIB_BSE_Timers.h"
-#include "LIB_BSE_Reset.h"
-#include "LIB_BSE_Clock.h" 
-#include "LIB_BSE_UART.h" 
-#include "LIB_BSE_ADC.h" 
+#include "LIB_PROJET_T_DAC.h"
+#include "LIB_PROJET_T_Config_Globale.h"
+#include "LIB_PROJET_T_GPIO.h"  
+#include "LIB_PROJET_T_INT_Ext.h"  
+#include "LIB_PROJET_T_Timers.h"
+#include "LIB_PROJET_T_Reset.h"
+#include "LIB_PROJET_T_Clock.h" 
+#include "LIB_PROJET_T_ADC.h" 
 //------------------------------------------------------------------------------
 
 //*****************************************************************************	 
@@ -36,11 +35,10 @@
 void Init_Device(void)
 {
 	CFG_Clock();
-	CFG_Reset();
 	CFG_GPIO();
+	CFG_RESET();
 	CFG_INT_Ext();
 	CFG_Timers();
-	CFG_UART();
 	CFG_DAC0();
 	CFG_ADC();
 }

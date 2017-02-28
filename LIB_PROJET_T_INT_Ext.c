@@ -14,7 +14,7 @@
 // Includes
 //------------------------------------------------------------------------------------
 #include <c8051f020.h>                    // SFR declarations
-#include "LIB_BSE_INT_Ext.h"  
+#include "LIB_PROJET_T_INT_Ext.h"  
 //------------------------------------------------------------------------------
 
 
@@ -49,6 +49,7 @@ void Disable_interrupt(void)
 {
 	EA=0;
 }
+/*
 void CLEAR_TF2(void)
 {
 	TF2=0;//Delete flag
@@ -56,4 +57,4 @@ void CLEAR_TF2(void)
 void CLEAR_IE1(void)
 {
 	IE1=0;//Delete flag
-}
+}*/

@@ -14,7 +14,7 @@
 // Includes
 //------------------------------------------------------------------------------------
 #include <c8051f020.h>                    // SFR declarations
-#include "LIB_BSE_Timers.h"
+#include "LIB_PROJET_T_Timers.h"
 
 unsigned char RTC_Centieme=0;
 unsigned char RTC_Secondes=0;
@@ -64,7 +64,7 @@ void Config_Timer1(void)
 	TR1=1; //Activation Timer 1
 	
 }
-
+/*
 void Horloge_RTC(void)
 {
 
@@ -108,4 +108,4 @@ void clear_RTC(void)
 unsigned long int Conversion_horloge_en_centiemes()
 {
 		return RTC_Centieme+RTC_Secondes*100+RTC_Minutes*6000+RTC_Heures*360000;
-}
+}*/
