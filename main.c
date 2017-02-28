@@ -55,7 +55,7 @@
 #endif
 
 sbit BP = P3^7;     
-
+sbit PIN= P3^1;
 
 
 
@@ -67,12 +67,21 @@ void main(void) {
      cfg_UART0_mode1();
      init_Serial_Buffer();                            
      EA = 1;                              /* allow interrupts to happen */
-	   serOutstring("Test_Buffer_Circulaire\n\r");
-	
+	   serOutstring("mogo 1:0 2:0\r");
+
 while(1) {
     
 	
-		while ((c=serInchar())!=0) serOutchar(c);
+		if ((c=serInchar())!=0){
+		if(c=='A')
+		{
+			PIN=1;
+		}
+		else
+		{
+			PIN=0;
+		}
 		
 	}
 } /* main */
+}

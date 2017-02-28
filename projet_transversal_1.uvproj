@@ -118,7 +118,7 @@
             <Oh166RecLen>16</Oh166RecLen>
           </OPTHX>
           <Simulator>
-            <UseSimulator>1</UseSimulator>
+            <UseSimulator>0</UseSimulator>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
             <RunToMain>1</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
@@ -129,7 +129,7 @@
             <LimitSpeedToRealTime>0</LimitSpeedToRealTime>
           </Simulator>
           <Target>
-            <UseTarget>0</UseTarget>
+            <UseTarget>1</UseTarget>
             <LoadApplicationAtStartup>1</LoadApplicationAtStartup>
             <RunToMain>0</RunToMain>
             <RestoreBreakpoints>1</RestoreBreakpoints>
@@ -140,7 +140,7 @@
             <RestoreTracepoints>1</RestoreTracepoints>
           </Target>
           <RunDebugAfterBuild>0</RunDebugAfterBuild>
-          <TargetSelection>-1</TargetSelection>
+          <TargetSelection>9</TargetSelection>
           <SimDlls>
             <CpuDll></CpuDll>
             <CpuDllArguments></CpuDllArguments>
@@ -154,7 +154,7 @@
             <PeripheralDll></PeripheralDll>
             <PeripheralDllArguments></PeripheralDllArguments>
             <InitializationFile></InitializationFile>
-            <Driver></Driver>
+            <Driver>BIN\SiC8051F.dll</Driver>
           </TargetDlls>
         </DebugOption>
         <Utilities>
@@ -218,7 +218,7 @@
               <RCB>
                 <Type>0</Type>
                 <StartAddress>0x0</StartAddress>
-                <Size>0x0</Size>
+                <Size>0xffff</Size>
               </RCB>
               <RXB>
                 <Type>0</Type>
@@ -392,11 +392,6 @@
               <FilePath>.\LIB_PROJET_T_Timers.c</FilePath>
             </File>
             <File>
-              <FileName>LIB_PROJET_T_UART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\LIB_PROJET_T_UART.c</FilePath>
-            </File>
-            <File>
               <FileName>UART0_RingBuffer_lib.C</FileName>
               <FileType>1</FileType>
               <FilePath>.\UART0_RingBuffer_lib.C</FilePath>
@@ -450,11 +445,6 @@
               <FileName>LIB_PROJET_T_Timers.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\LIB_PROJET_T_Timers.h</FilePath>
-            </File>
-            <File>
-              <FileName>LIB_PROJET_T_UART.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\LIB_PROJET_T_UART.h</FilePath>
             </File>
             <File>
               <FileName>UART0_RingBuffer_lib.h</FileName>

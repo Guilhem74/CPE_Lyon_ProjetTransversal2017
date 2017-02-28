@@ -40,6 +40,7 @@ void Set_GPIO(void)
 	P3MDOUT|=0xFC;//P3.2 P3.3 P3.4 P3.5 P3.6 P3.7	en push pull
 	//INPUT config
 	/*Mise a 1 des entrees pour desactiver le LTransistor du push pull*/
+	XBR2 |=0x40;
 	P3__0=1;
 	P3__1=1;
 	P2__7=1;
