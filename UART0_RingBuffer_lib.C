@@ -237,8 +237,8 @@ unsigned char len,code_err=0;
 //*************************************************************************************************
 
 //*****************************************************************************
-#define Preload_Timer1 (SYSCLK/(BAUDRATE*16))
-#if Preload_Timer1 > 255 
+#define Preload_Timer0 (SYSCLK/(BAUDRATE*16))
+#if Preload_Timer0 > 255 
 #error "Valeur Preload Timer0 HORS SPECIFICATIONS"
 #endif 
 //*****************************************************************************	 
@@ -252,7 +252,7 @@ void cfg_Clock_UART(void)
 	TMOD &= 0x2f;			  // Timer1 configuré en timer 8 bit avec auto-reload	
 	TF1 = 0;				  // Flag Timer effacé
 
-	TH1 = -(Preload_Timer1);
+	TH1 = -(Preload_Timer0);
 	ET1 = 0;				   // Interruption Timer 1 dévalidée
 	TR1 = 1;				   // Timer1 démarré
 }
