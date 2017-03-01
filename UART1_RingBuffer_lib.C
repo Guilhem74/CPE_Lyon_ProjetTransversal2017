@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------------------
-// ID_1.1    UART0_RingBuffer_lib.C -----------------------------------------------------
+// ID_1.1    UART1_RingBuffer_lib.C -----------------------------------------------------
 //---------------------------------------------------------------------------------------
 // ID_1.2  Source originale des codes de buffer circulaire: 
 //         Microcontroller Programming III	MP7-46 - 
@@ -14,7 +14,7 @@
 // 
 // ID_1.7 Dépendances matérielles "cible" ----------------------------------------------- 
 // Processeur cible: C8051F02x
-// Périphérique UART0
+// Périphérique UART1
 
 // ID_1.8 Dépendances matérielles "extérieures" -----------------------------------------
 // 
@@ -25,7 +25,7 @@
 //
 // ID_1.10 Fonctionnement du code -------------------------------------------------------
 // Le code contient:
-// - les fonctions de configuration de l'UART0 et de son timer associé. 
+// - les fonctions de configuration de l'UART1 et de son timer associé. 
 // - Une fonction de création du buffer circulaire (initialisation de structures)
 // - Les fonctions de remplissage du buffer de transmission et les fonctions de vidage 
 //   du buffer de réception.
@@ -34,7 +34,7 @@
 //    reçues sur la liaison série.
 
 // ID_1.11 Choix technologiques divers --------------------------------------------------
-// Utilisation de L'UART0 et du Timer 1 comme source d'horloge de l'UART0.
+// Utilisation de L'UART1 et du Timer 1 comme source d'horloge de l'UART1.
 // Pour fonctionner ce code a besoin des macros Define SYSCLK et BAUDRATE
 
 // ID_1.12 Tests réalisés ---------------------------------------------------------------
@@ -125,36 +125,36 @@ static RB_CREATE(in, unsigned char xdata);            /* static struct { ... } i
 
 //**************************************************************************************************
 //**************************************************************************************************
-void UART0_ISR(void) interrupt 0x4 {
+void UART1_ISR(void) interrupt 20 {
  
 //	static unsigned int cp_tx = 0;
 //  static unsigned int cp_rx = 0;
 	
-  if (TI0==1) // On peut envoyer une nouvelle donnée sur la liaison série
+  if ((SCON1 & 0x02) == 0x02) // On peut envoyer une nouvelle donnée sur la liaison série
   { 
   	if(!RB_EMPTY(&out)) {
-       SBUF0 = *RB_POPSLOT(&out);      /* start transmission of next byte */
+       SBUF1 = *RB_POPSLOT(&out);      /* start transmission of next byte */
        RB_POPADVANCE(&out);            /* remove the sent byte from buffer */
 //			 cp_tx++;
   	}
   	else TXactive = 0;                 /* TX finished, interface inactive */
-	TI0 = 0;
+	SCON1 &= ~0x02;//Clear TI1
   }
   else // RI0 à 1 - Donc une donnée a été reçue
   {
 		if(!RB_FULL(&in)) {                   // si le buffer est plein, la donnée reçue est perdue
-     	*RB_PUSHSLOT(&in) = SBUF0;        /* store new data in the buffer */
+     	*RB_PUSHSLOT(&in) = SBUF1;        /* store new data in the buffer */
 		  RB_PUSHADVANCE(&in);               /* next write location */
 //		  cp_rx++;
 	 }
-   RI0 = 0;
+   SCON1 &= ~0x01;//Clear RI1
   }
 }
 // **************************************************************************************************
 // init_Serial_Buffer: Initialisation des structuresde gestion des buffers transmission et reception
 // *************************************************************************************************
 //**************************************************************************************************
-void init_Serial_Buffer(void) {
+void init_Serial_Buffer_1(void) {
 
     RB_INIT(&out, outbuf, MAX_BUFLEN-1);           /* set up TX ring buffer */
     RB_INIT(&in, inbuf,MAX_BUFLEN-1);             /* set up RX ring buffer */
@@ -163,7 +163,7 @@ void init_Serial_Buffer(void) {
 // **************************************************************************************************
 // SerOutchar: envoi d'un caractère dans le buffer de transmission de la liaison série
 // *************************************************************************************************
-unsigned char serOutchar(char c) {
+unsigned char serOutchar_1(char c) {
 
   if(!RB_FULL(&out))  // si le buffer n'est pas plein, on place l'octet dans le buffer
   {                 
@@ -172,7 +172,7 @@ unsigned char serOutchar(char c) {
 
   	if(!TXactive) {
 		TXactive = 1;                      /* indicate ongoing transmission */
- 	  TI0 = 1;//   Placer le bit TI à 1 pour provoquer le déclenchement de l'interruption
+ 	  SCON1 |= 0x02;//   Placer le bit TI à 1 pour provoquer le déclenchement de l'interruption
   	}
 	return 0;  // opération correctement réalisée 
   }
@@ -183,7 +183,7 @@ unsigned char serOutchar(char c) {
 //  Fonction adaptée pour la réception de codes ASCII - La réception de la valeur binaire 0
 //  n'est pas possible (conflit avec le code 0 retourné si il n'y a pas de caractère reçu)
 // ************************************************************************************************
-char serInchar(void) {
+char serInchar_1(void) {
 char c;
 
   if (!RB_EMPTY(&in))
@@ -202,7 +202,7 @@ char c;
 //  qu'aucun caractère n'a été reçu.
 //  
 // ************************************************************************************************
-unsigned int serInchar_Bin(void) {
+unsigned int serInchar_Bin_1(void) {
 char c;
 unsigned int return_code = 0;
 	 
@@ -219,15 +219,15 @@ unsigned int return_code = 0;
 // *************************************************************************************************
 // serOutstring:  Envoi d'une chaine de caractère dans le buffer de transmission
 // ************************************************************************************************
-unsigned char serOutstring(char *buf) {
+unsigned char serOutstring_1(char *buf) {
 unsigned char len,code_err=0;
 
   for(len = 0; len < strlen(buf); len++)
-     code_err +=serOutchar(buf[len]);
+     code_err +=serOutchar_1(buf[len]);
   return code_err;
 }
 //*************************************************************************************************
-//  CONFIGURATION BAS NIVEAU de L'UART0
+//  CONFIGURATION BAS NIVEAU de L'UART1
 //*************************************************************************************************
 
 //*****************************************************************************
@@ -235,21 +235,30 @@ unsigned char len,code_err=0;
 #if Preload_Timer0 > 255 
 #error "Valeur Preload Timer0 HORS SPECIFICATIONS"
 #endif 
-//*****************************************************************************	 
-//cfg_Clock_UART
-//	Utilisation du Timer 1
-//*****************************************************************************	 
-void cfg_Clock_UART(void)
-{
-  CKCON |= 0x10;      // T1M: Timer 1 use the system clock.
-  TMOD |= 0x20;       //  Timer1 CLK = system clock
-	TMOD &= 0x2f;			  // Timer1 configuré en timer 8 bit avec auto-reload	
-	TF1 = 0;				  // Flag Timer effacé
 
-	TH1 = -(Preload_Timer0);
-	ET1 = 0;				   // Interruption Timer 1 dévalidée
-	TR1 = 1;				   // Timer1 démarré
-}
  
+//*****************************************************************************	 
+//CFG_uart1_mode1 et uart0
+//
+//*****************************************************************************	 
+void cfg_UARTS_mode1(void)
+{
+		T4CON = 0xCF;     // Source clock Timer 1 pour uart1
+		RCLK0 = 0;     // Source clock Timer 1 pour uart0
+		TCLK0 = 0;
+	
+		PCON  |= 0x90;
+		PCON &= 0xB7;  // SSTAT0=0	et SSTAT1=0 SMOD0 = 0 = SMOD1
+
+	  SCON0 = 0x70;   // Mode 1 - Check Stop bit - Reception validée
+		SCON1 = 0x52;//Mode 1 8 bit RX actif TI1 actif interruption ok
+
+		TI0 = 1;        // Transmission: octet transmis (prêt à recevoir un char
+					          // pour transmettre					
+    ES0 = 1;        // interruption UART0 autorisée	
+		EIE2 |= 0x40; //Active interruption UART1
+	
+	
+}
 
 
