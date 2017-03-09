@@ -47,9 +47,9 @@
 #include <stdio.h>
 #include <intrins.h>
 #include <string.h>
-
-#include <UARTS_RingBuffer_lib.h>
-
+#include "LIB_PROJET_T_Config_Globale.h"
+#include <UART0_RingBuffer_lib.h>
+#include <UART1_RingBuffer_lib.h>
 #ifndef CFG_Globale
   #define CFG_Globale
   #include <CFG_Globale.h>
@@ -61,29 +61,6 @@ sbit BP = P3^7;
 // ****************************************************************************
 //
 //*****************************************************************************
-void Oscillator_Init()
-{
-    int i = 0;
-    OSCXCN    = 0x67;
-    for (i = 0; i < 3000; i++);  // Wait 1ms for initialization
-    while ((OSCXCN & 0x80) == 0);
-    OSCICN    = 0x0C;
-}
-
-void Port_IO_Init()
-{
-
-		P0MDOUT   =  0x01;
-		P0MDOUT |= 0x15;                    // enable P0.0 (TX), P0.2 (SCK), and 
-																		 // P0.4 (MOSI) as push-pull outputs 
-	 P0MDOUT |= 0x40; // enable TX1 as a push-pull output
-		XBR0      = 0x04;
-		XBR0   |= 0x06;                     // Enable SPI0 and UART0
-		XBR1    = 0x00;
-		XBR2      = 0x40; // Enable crossbar and weak pull-ups
-		XBR2 |= 0x44; //active uart1
-		P3        |= 0x80;
-}
 
 
 // **************************************************************************************************
@@ -97,18 +74,21 @@ void main(void) {
     char  c;
      WDTCN     = 0xDE;
 			WDTCN     = 0xAD;
-		Oscillator_Init();
-		Port_IO_Init();
-		cfg_Clock_UART();
-
+		//
+	//	
+	
+//Port_IO_Init();
+//Oscillator_Init();
+Init_Device();
+	cfg_Clock_UART();
 		cfg_UARTS_mode1();
 		init_Serial_Buffer();   
 		init_Serial_Buffer_1();	
 		EA = 1;                              /* allow interrupts to happen */
 		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
-		serOutstring_1("mogo 1:45 2:45\r");
-			
-
+		serOutstring_1("mogo 1:40 2:40\r");
+		serOutstring("mogo 1:45 2:45\r\n");
+		
 while(1) {
 
 	 while ((c=serInchar_1())!=0) serOutchar(c);

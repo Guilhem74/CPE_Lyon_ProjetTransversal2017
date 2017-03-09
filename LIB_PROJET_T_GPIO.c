@@ -41,13 +41,7 @@ void Set_GPIO(void)
 	//INPUT config
 	/*Mise a 1 des entrees pour desactiver le LTransistor du push pull*/
 	XBR2 |=0x40;
-	P3__0=1;
-	P3__1=1;
-	P2__7=1;
-	P2__2=1;
-	P1__2=1;
-	P0__0=1;
-	P0__1=1;
+
 	/*Mise en drain ouvert*/
 	P3MDOUT&=0xFC;//P3.1 P3.0 en drain ouvert
 	P2MDOUT&=0x7D;//P2.2 P2.7 en drain ouvert
@@ -61,8 +55,9 @@ void Set_GPIO(void)
 	XBR2|=0x6D;
 	
 	/*End_Config*/
-	P1MDOUT|=0x08;//Disable if not sysclock
-	
+	P1MDOUT|=0x09;//Disable if not sysclock
+	P3 |= 0x80;
+
 
 }
 
