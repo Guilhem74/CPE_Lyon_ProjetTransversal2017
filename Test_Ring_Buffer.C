@@ -43,11 +43,12 @@
 
 
 //*************************************************************************************************
-                  // SFR declarations
+#include <c8051f020.h>                    // SFR declarations
 #include <stdio.h>
 #include <intrins.h>
 #include <string.h>
 
+#include <UARTS_RingBuffer_lib.h>
 #include <UARTS_RingBuffer_lib.h>
 
 #ifndef CFG_Globale
