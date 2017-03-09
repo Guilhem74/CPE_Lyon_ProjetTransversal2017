@@ -29,41 +29,9 @@ unsigned char RTC_Heures=0;
 
 void CFG_Timers(void)
 {
-	Config_Timer2();
-	Config_Timer1();
-}
-void Config_Timer2(void)
-{
-	CKCON&=0xDF;//Divide system clock by 12
-	TF2=0;
-	EXF2=0;
-	EXEN2=0;
-	CT2=0;
-	RCLK0=0;
-	TCLK0=0;
-	CPRL2=0;
-	RCAP2L=0xff;
-	RCAP2H=0xDB;
-	TL2=0xff;
-	TH2=0xff;
-	TR2=1;
-	PT2=1;
-	ET2=1;
+
 }
 
-void Config_Timer1(void)
-{
-	CKCON|=(0x10); //Utilisation de l'horloge système
-	ET1=0; //On désactive les demandes d'interruption du Timer 1
-	TF1=0; //RAZ du flag 
-	TMOD&=0x2f; //Timer 1 autoreload, 8bits et independant de /INT0
-	TMOD|=0x20; 
-	TH1=0xf4; //Baud Rate = 115200 (Système 22.1184MHZ)
-	TL1=TH1; //On intitialise le timer 1 pour qu'il commence au bon endroit
-	
-	TR1=1; //Activation Timer 1
-	
-}
 /*
 void Horloge_RTC(void)
 {
