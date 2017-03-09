@@ -46,7 +46,7 @@
                   // SFR declarations
 #include <stdio.h>
 #include <intrins.h>
-#include <string.h>
+//#include <string.h>
 #include "LIB_PROJET_T_Config_Globale.h"
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
@@ -56,22 +56,13 @@
 #endif
 
 sbit BP = P3^7;     
-
-
-// ****************************************************************************
-//
-//*****************************************************************************
-
-
-// **************************************************************************************************
-// MAIN
-// **************************************************************************************************
-                     /* size of local string buffer */ 
-
+void SerialEvent1();
+void SerialEvent0();
 
 
 void main(void) {
-    char  c;
+    
+
      WDTCN     = 0xDE;
 			WDTCN     = 0xAD;
 		//
@@ -86,11 +77,89 @@ Init_Device();
 		init_Serial_Buffer_1();	
 		EA = 1;                              /* allow interrupts to happen */
 		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
-		serOutstring_1("mogo 1:40 2:40\r");
-		serOutstring("mogo 1:45 2:45\r\n");
+		//serOutstring_1("mogo 1:40 2:40\r");
+		serOutstring("INIT 8051 DONE\r\n");
 		
 while(1) {
+	SerialEvent1();
+	 SerialEvent0();
+} 
+}/* main */
 
-	 while ((c=serInchar_1())!=0) serOutchar(c);
-	}
-} /* main */
+void SerialEvent1()
+{
+	#define SIZE_BUFF_RECEPT_UART1 5
+	static char Reception_Uart1[5];
+	static unsigned char Value_Rec1=0;
+	char  c;
+		int i=0;
+	if ((c=serInchar_1())!=0)
+	 {
+		 if(c=='\n'||c=='\r')
+		 {//Message de com ne pas tenir compte pour serializer
+		 }
+		 else if (c=='>')
+		 {//reception terminé, on passe a la suite
+			 //TODO ACTION PARSEUR
+			  serOutstring(Reception_Uart1);//ici recopie serial
+			 Value_Rec1=0;
+			  for(i=0;i<SIZE_BUFF_RECEPT_UART1;i++)
+				 {
+					 Reception_Uart1[i]='\0';
+				 }
+		 }
+		 else
+		 {
+			 Reception_Uart1[Value_Rec1]=c;
+			 Value_Rec1++;
+			 if(Value_Rec1>=SIZE_BUFF_RECEPT_UART1)
+			 {//protection contre message indé
+				 Value_Rec1=0;
+				 serOutstring("Message Indé\r\n");
+				 for(i=0;i<SIZE_BUFF_RECEPT_UART1;i++)
+				 {
+					 Reception_Uart1[i]='\0';
+				 }
+			 }
+		 }
+	 }
+ }
+ 
+void SerialEvent0()
+{
+	#define SIZE_BUFF_RECEPT_UART0 5
+	static char Reception_Uart0[SIZE_BUFF_RECEPT_UART0];
+	static unsigned char Value_Rec0=0;
+	char  c;
+		int i=0;
+	if ((c=serInchar())!=0)
+	 {
+		 if(c=='\r')//Fin de commande putty
+		 {//Message de com fin de reception pour PC
+			 //TODO ACTION PARSEUR
+
+			 Value_Rec0=0;
+			 for(i=0;i<SIZE_BUFF_RECEPT_UART0;i++)
+				 {
+					 Reception_Uart0[i]='\0';
+				 }
+		 }
+		 else
+		 {
+			 Reception_Uart0[Value_Rec0]=c;
+			 Value_Rec0++;
+			  
+			 if(Value_Rec0>=SIZE_BUFF_RECEPT_UART0)
+			 {//protection contre message indé
+				
+				 serOutstring("Message Indé\r\n");
+				 Value_Rec0=0;
+				 for(i=0;i<SIZE_BUFF_RECEPT_UART0;i++)
+				 {
+					 Reception_Uart0[i]='\0';
+				 }
+			 }
+		 }
+	 }
+ }
+
