@@ -220,4 +220,15 @@ pip-log.txt
 *.LST
 .OBJ
 .LST
+*.uvopt
+*.uvproj
+*.uvgui.*
+*.lnp
+*.iex
 
+.uvopt
+.uvproj
+.uvgui.*
+.lnp
+.iex
+P_T*
