@@ -52,8 +52,6 @@
 
 sbit BP = P3^7;     
 
-void avancerEtape();
-void gestionEtapes();
 
 
 
@@ -74,7 +72,7 @@ Init_Device();
 		init_Serial_Buffer_1();	
 		EA = 1;                              /* allow interrupts to happen */
 		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
-		//serOutstring_1("mogo 1:40 2:40\r");
+		//serOutstring_1("digo 1:400:30 2:400:30\r");
 		serOutstring("INIT 8051 DONE\r\n");
 		
 while(1) {
