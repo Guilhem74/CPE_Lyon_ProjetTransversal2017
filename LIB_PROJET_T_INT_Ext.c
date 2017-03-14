@@ -34,10 +34,10 @@ void CFG_INT_Ext(void)
 
 void Config_INT1(void)
 {
-	IE1=0;//effacement du flag
+	IT1=1;//interruption falling edge
 	EX1=1;//Enable external interrupt on /INT1 pin
-	XBR1|=0x10;
-	IT1=1;//interruption edge
+	PX1 =  1; // priority int1
+	IE1=0;//effacement du flag
 }
 
 

@@ -64,7 +64,10 @@ sbit BP = P3^7;
 
 char Busy_UART1=0;
 int Vitesse_Robot=20;//pourcentage 	
-
+int pulse_servo_H = 15; // correspond à un angle de 0°
+int angle = 0;
+int distance_ultrason = 0;
+int compteur_telemetre=0;	
 void main(void) {
     
 

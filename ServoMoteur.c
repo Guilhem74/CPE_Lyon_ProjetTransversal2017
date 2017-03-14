@@ -1,14 +1,15 @@
 #include "ServoMoteur.h"
+#include "Global.h"
 #include <c8051f020.h>   
-int pulse_servo_H = 15; // correspond à un angle de 0°
-int angle = 0;
-
+extern int pulse_servo_H;
+extern int angle;
+extern int distance_ultrason;
+extern int compteur_telemetre;
 
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 {
 
 	static int cpt_servo_H = 0; 
-	
 	//////////////////////////////////////////
 	// Servomoteur Horizontal   --> Crée une pulse de periode 20ms avec etat haut entre 0.5 et 2.8ms (lié à l'angle voulue)
 	//////////////////////////////////////////
@@ -25,8 +26,29 @@ void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 			P3 &= 0xBF; // eteind P3.6 le reste de la pulse
 	}
 	cpt_servo_H = cpt_servo_H + 1;
-	
+		//////////////////////////////////////////
+	// Telemetre ultrason   --> Crée une pulse sur P6.4 et l'echo est renvoyé sur INT1 
+	//////////////////////////////////////////
+	if(compteur_telemetre ==0 )
+	{
+			P6 |= 0xF0; // P6.4 à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
+	}
+	else
+	{
+		P6 &= 0x0F; // P6.4 retourne à etat bas le reste du temps 
+		
+	}
+		compteur_telemetre++;//on compte
 	TF2 = 0;
+}
+
+void reception_telemetre_ultrason(void) interrupt 2
+{
+	distance_ultrason= 340*compteur_telemetre/(200) - 7; //calcul distance entre l'obstacle et le robot:
+	//onde à 340m/s, compteur incrémenté toutes les 0.1ms 
+	// On multiplie 340 par 100 pour avoir cm/s // On divise par 10000 compteur telemetre pour avoir en secondes et on divise par 2 (aller retour ECHO)
+	compteur_telemetre=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
+	IE1=0; // remets flag a 0*/
 }
 
 //////////////////////////////////////////
