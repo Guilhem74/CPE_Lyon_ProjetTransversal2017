@@ -24,12 +24,5 @@ void CFG_GPIO(void);
 void Set_GPIO(void);
 
 void Enable_Crossbar(void);
-void Pulse_P20(void);
-void Pulse_P21(void);
-void SET_Decl_PES(void);
-void UNSET_Decl_PES(void);
-void Set_Erreur(void);
-char Read_P2_2(void);
-void SET_P3_5(void);
-void UNSET_P3_5(void);
+
 #endif

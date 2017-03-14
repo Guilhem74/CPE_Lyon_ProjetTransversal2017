@@ -68,24 +68,18 @@ int pulse_servo_H = 15; // correspond à un angle de 0°
 int angle = 0;
 int distance_ultrason = 0;
 int compteur_telemetre=0;	
+int distance_infrarouge=0;
 void main(void) {
-    
 
      WDTCN     = 0xDE;
 			WDTCN     = 0xAD;
-		//
-	//	
 	
-//Port_IO_Init();
-//Oscillator_Init();
 Init_Device();
 	cfg_Clock_UART();
 		cfg_UARTS_mode1();
 		init_Serial_Buffer();   
 		init_Serial_Buffer_1();	
-		EA = 1;                              /* allow interrupts to happen */
-		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
-		//serOutstring_1("digo 1:400:30 2:400:30\r");
+		EA = 1;   
 		serOutstring("INIT 8051 DONE\r\n");
 
 	Ready_To_Continue();

@@ -14,11 +14,10 @@
 #define __LIB_PROJET_T_ADC__
 void CFG_ADC(void);
 void CFG_VREF(void);
-
 void CFG_ADC0(void);
-unsigned char ACQ_ADC(void);
-void SET_AD0BUSY(void);
-char Fin_Conversion(void);
 
-void CLEAR_ADC_Flag(void);
+//////////////////////////////////////////
+// Calcul de la distance, retourne la distance en cm
+//////////////////////////////////////////
+int ACQ_ADC(void);
 #endif

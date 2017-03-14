@@ -1,9 +1,12 @@
 #include "ServoMoteur.h"
 #include "Global.h"
+#include "LIB_PROJET_T_ADC.h" 
+
 #include <c8051f020.h>   
 extern int pulse_servo_H;
 extern int angle;
 extern int distance_ultrason;
+extern int distance_infrarouge;
 extern int compteur_telemetre;
 
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
@@ -48,6 +51,10 @@ void reception_telemetre_ultrason(void) interrupt 2
 	//onde à 340m/s, compteur incrémenté toutes les 0.1ms 
 	// On multiplie 340 par 100 pour avoir cm/s // On divise par 10000 compteur telemetre pour avoir en secondes et on divise par 2 (aller retour ECHO)
 	compteur_telemetre=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
+	
+	
+		distance_infrarouge=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+
 	IE1=0; // remets flag a 0*/
 }
 
