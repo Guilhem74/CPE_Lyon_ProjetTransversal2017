@@ -202,20 +202,20 @@ char c;
 //  qu'aucun caractère n'a été reçu.
 //  
 // ************************************************************************************************
-unsigned int serInchar_Bin_1(void) {
-char c;
-unsigned int return_code = 0;
-	 
-  if (!RB_EMPTY(&in))
-  {                
-    // un caractère au moins est dans le buffer de réception
-  	c = *RB_POPSLOT(&in);                 /* get character off the buffer */
- 	  RB_POPADVANCE(&in);                   /* adjust read position */
-  	return 0xFF00+c;
-  }
-	// pas de caractère dans le buffer de réception.
-  else return return_code;
-}
+//unsigned int serInchar_Bin_1(void) {
+//char c;
+//unsigned int return_code = 0;
+//	 
+//  if (!RB_EMPTY(&in))
+//  {                
+//    // un caractère au moins est dans le buffer de réception
+//  	c = *RB_POPSLOT(&in);                 /* get character off the buffer */
+// 	  RB_POPADVANCE(&in);                   /* adjust read position */
+//  	return 0xFF00+c;
+//  }
+//	// pas de caractère dans le buffer de réception.
+//  else return return_code;
+//}
 // *************************************************************************************************
 // serOutstring:  Envoi d'une chaine de caractère dans le buffer de transmission
 // ************************************************************************************************

@@ -69,27 +69,27 @@ int angle = 0;
 int distance_ultrason = 0;
 int compteur_telemetre=0;	
 int distance_infrarouge=0;
+unsigned long int Time_in_ms=0;
 void main(void) {
 
-     WDTCN     = 0xDE;
-			WDTCN     = 0xAD;
+
 	
-Init_Device();
+	Init_Device();
 	cfg_Clock_UART();
 		cfg_UARTS_mode1();
 		init_Serial_Buffer();   
 		init_Serial_Buffer_1();	
 		EA = 1;   
 		serOutstring("INIT 8051 DONE\r\n");
-
+Gen_Servo_Horizontal(0);
 	Ready_To_Continue();
-		
 
-while(1) {
+
+	while(1) {
 
 	SerialEvent1();
 	SerialEvent0();
-} 
+	} 
 }
 
 

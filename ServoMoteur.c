@@ -8,11 +8,18 @@ extern int angle;
 extern int distance_ultrason;
 extern int distance_infrarouge;
 extern int compteur_telemetre;
-
+extern unsigned long int Time_in_ms;
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 {
 
 	static int cpt_servo_H = 0; 
+	static int cmpt_time=0;
+	cmpt_time++;
+	if(cmpt_time==10)
+	{
+		Time_in_ms++;
+		cmpt_time=0;
+	}
 	//////////////////////////////////////////
 	// Servomoteur Horizontal   --> Crée une pulse de periode 20ms avec etat haut entre 0.5 et 2.8ms (lié à l'angle voulue)
 	//////////////////////////////////////////

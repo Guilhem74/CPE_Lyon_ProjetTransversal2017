@@ -34,6 +34,9 @@
 //*****************************************************************************
 void Init_Device(void)
 {
+	EA=0;
+	     WDTCN     = 0xDE;
+			WDTCN     = 0xAD;
 	CFG_Clock();
 	CFG_GPIO();
 	CFG_RESET();
