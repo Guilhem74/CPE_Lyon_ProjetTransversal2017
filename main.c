@@ -46,20 +46,13 @@
                   // SFR declarations
 #include <stdio.h>
 #include <intrins.h>
-#include "ServoMoteur.h"
 
-//#include <string.h>
+#include "ServoMoteur.h"
 #include "LIB_PROJET_T_Config_Globale.h"
-#include <UART0_RingBuffer_lib.h>
-#include <UART1_RingBuffer_lib.h>
-#ifndef CFG_Globale
-  #define CFG_Globale
-  #include <CFG_Globale.h>
-#endif
+#include "Communication.h"
+
 
 sbit BP = P3^7;     
-
-
 
 
 
@@ -80,17 +73,14 @@ Init_Device();
 		init_Serial_Buffer_1();	
 		EA = 1;                              /* allow interrupts to happen */
 		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
-		//serOutstring_1("mogo 1:40 2:40\r");
+		//serOutstring_1("digo 1:400:30 2:400:30\r");
 		serOutstring("INIT 8051 DONE\r\n");
 		//Gen_Servo_Horizontal(45);//Choix de l'angle du servomoteur
 while(1) {
 
+	SerialEvent1();
+	SerialEvent0();
 } 
-
-
 }
-
-
-
 
 
