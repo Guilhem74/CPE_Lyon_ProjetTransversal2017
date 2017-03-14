@@ -58,6 +58,11 @@ void Set_GPIO(void)
 	P1MDOUT|=0x09;//Disable if not sysclock
 	P3 |= 0x80;
 
+//Partie servomoteur
+P3MDOUT |= 0xE0; // Mets P3.5 et P3.6 en sortie
+	XBR0|=0xEF;
+	XBR1|=0xFF;
+	XBR2|=0x5D;
 
 }
 
