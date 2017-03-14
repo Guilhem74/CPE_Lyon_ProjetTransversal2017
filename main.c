@@ -48,11 +48,20 @@
 #include <intrins.h>
 #include "LIB_PROJET_T_Config_Globale.h"
 #include "Communication.h"
-
+#include <string.h>
+#include <UART0_RingBuffer_lib.h>
+#include <UART1_RingBuffer_lib.h>
+#ifndef CFG_Globale
+  #define CFG_Globale
+  #include <CFG_Globale.h>
+#endif
+#include <stdlib.h>
 
 sbit BP = P3^7;     
 
 
+char Busy_UART1=0;
+int Vitesse_Robot=20;//pourcentage 	
 
 
 void main(void) {
@@ -74,6 +83,7 @@ Init_Device();
 		//serOutstring("\n\rTest_Buffer_Circulaire\n\r");
 		//serOutstring_1("digo 1:400:30 2:400:30\r");
 		serOutstring("INIT 8051 DONE\r\n");
+	Ready_To_Continue();
 		
 while(1) {
 	SerialEvent1();

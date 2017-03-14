@@ -1,7 +1,10 @@
 #include "Communication.h"
-#include "Global.h"
-#include <stdlib.h>
 
+#include "Deplacement.h"
+#include <UART0_RingBuffer_lib.h>
+#include <UART1_RingBuffer_lib.h>
+extern char Busy_UART1;
+extern int Vitesse_Robot;//pourcentage 	
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -94,7 +97,7 @@ Message_Commande Parseur_Uart_0(char entree[])
 	
 	if(strcmp("D",First)==0)
 	{
-		serOutchar('D');
+		
 		Retour=D;
 	}
 	else if(entree[0]=='E')
@@ -114,47 +117,37 @@ Message_Commande Parseur_Uart_0(char entree[])
 		if(Value_SS==2)
 		{
 			Vitesse_Robot=Value;
-			serOutstring(">\r\n");
+			Retour=TV;
 		}
 		else
-			serOutstring("Plz set a speed");
-		Retour=TV;
+			Retour=Empty;
+		
 	}
 	else if(strcmp("A",First)==0)
 	{//Avancer
 		int Value=20;
-		char Envoi[40];
 		int Value_SS=sscanf(entree,"%s %d",First,&Value);
 		if(Value_SS==2)
 		{
-			int Vitesse_Robot_temp=Value;
-			sprintf(Envoi,"mogo 1:%d 2:%d \r",Vitesse_Robot_temp,Vitesse_Robot_temp);
+			DeplacementContinu(Value);
 		}
 		else
-			sprintf(Envoi,"mogo 1:%d 2:%d \r",Vitesse_Robot,Vitesse_Robot);
+			DeplacementContinu(Vitesse_Robot);
 		
-		serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
 		Retour=A;
 	}
 	else if(strcmp("B",First)==0)
 	{//Reculer
 		
 		int Value=-20;
-		char Envoi[40];
 		int Value_SS=sscanf(entree,"%s %d",First,&Value);
 		if(Value_SS==2)
 		{
-			int Vitesse_Robot_temp=Value;
-			sprintf(Envoi,"mogo 1:%d 2:%d \r",-Vitesse_Robot_temp,-Vitesse_Robot_temp);
+			DeplacementContinu(-Value);
 		}
 		else
-			sprintf(Envoi,"mogo 1:%d 2:%d \r",-Vitesse_Robot,-Vitesse_Robot);
+			DeplacementContinu(-Vitesse_Robot);
 		
-		serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
 		Retour=B;
 	}
 	else if(strcmp("S",First)==0)
@@ -166,145 +159,121 @@ Message_Commande Parseur_Uart_0(char entree[])
 	}
 	else if(strcmp("RD",First)==0)
 	{//Rotation Droite
-		
-		
-		char Envoi[70]="";
-			sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",-Encodeur_90,Vitesse_Robot,Encodeur_90,Vitesse_Robot);
-		
-		serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
-
+		Tourner(-90,Vitesse_Robot);
 		Retour=RD;
 	}
 	else if(strcmp("RG",First)==0)
 	{//Rotation Gauche
-		
-		char Envoi[70]="";
-			sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",Encodeur_90,Vitesse_Robot,-Encodeur_90,Vitesse_Robot);
-		
-		serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
+		Tourner(-90,Vitesse_Robot);
 		Retour=RG;
 	}
 	else if(strcmp("RC",First)==0)
 	{//Rotation complete
-		char Envoi[70]="";
 		char sens;
-		int Value_SS=sscanf(entree,"%s %c",First,&sens);
-		if(sens=='D')
-			sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",-2*Encodeur_90,Vitesse_Robot,2*Encodeur_90,Vitesse_Robot);
-		else if(sens=='G')
-			sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",2*Encodeur_90,Vitesse_Robot,-2*Encodeur_90,Vitesse_Robot);
-		else
-		  serOutstring("Erreur de sens RC");
-
 		
-		serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
+		int Value_SS=sscanf(entree,"%s %c",First,&sens);
 		Retour=RC;
+		if(sens=='D')
+				Tourner(180,Vitesse_Robot);
+			else if(sens=='G')
+				Tourner(-180,Vitesse_Robot);
+		else
+		{
+				Retour=Empty;
+		}
+		
 	}
 	else if(strcmp("RA",First)==0)
 	{//Rotation 
 		
-		char Envoi[70]="";
 		char sens;
 		int Value=20;
 		int Sens_Val=-1;
-		int Angle_Val=90*5.7;
+		int Angle_Val=90;
 		int Value_SS=sscanf(entree,"%s %c:%d",First,&sens,&Value);
-		if(Value_SS==2)
+		if(Value_SS>=2)
 		{//Sens spécifié
-			serOutstring("2\r\n");
 			if(sens=='D')
 				Sens_Val=-1;
 			else if(sens=='G')
 				Sens_Val=1;
 		}
-		else if(Value_SS==3)
-		{//Sens et valeur angle spécifié
-			serOutstring("3\r\n");
-				if(sens=='D')
-				Sens_Val=-1;
-			else if(sens=='G')
-				Sens_Val=1;
-			
-			Angle_Val=Value*5.7;
+		if(Value_SS==3)
+		{//Valeur spécifié
+			Angle_Val=Value;
 		}
-		
-		
-			sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",Sens_Val*Angle_Val,Vitesse_Robot,-Sens_Val*Angle_Val,Vitesse_Robot);
-serOutstring_1(Envoi);
-		serOutstring(Envoi);
-		Busy_UART1=1;
+		Tourner(Sens_Val*Angle_Val,Vitesse_Robot);
 		Retour=RA;
 	}
-	else if(entree[0]=='A'&&entree[1]=='S'&&entree[2]=='S')
+	else if(strcmp("ASS",First)==0)
 	{//Acquisition son
 		Retour=ASS;
 	}
-	else if(entree[0]=='G')
+	else if(strcmp("G",First)==0)
 	{//Deplacement BR
 		Retour=G;
 	}
-	else if(entree[0]=='M'&&entree[1]=='I')
+	else if(strcmp("MI",First)==0)
 	{//Mesure courant
 		Retour=MI;
 	}
-	else if(entree[0]=='M'&&entree[1]=='E')
+	else if(strcmp("ME",First)==0)
 	{//Mesure Energie
 		Retour=ME;
 	}
-	else if(entree[0]=='I'&&entree[1]=='P'&&entree[2]=='O')
+	else if(strcmp("IPO",First)==0)
 	{//Init pos
 		Retour=IPO;
 	}
-	else if(entree[0]=='P'&&entree[1]=='O'&&entree[2]=='S')
+	else if(strcmp("POS",First)==0)
 	{//Pos
 		Retour=POS;
 	}
-	else if(entree[0]=='M'&&entree[1]=='O'&&entree[2]=='U')
+	else if(strcmp("MOU",First)==0)
 	{//Detection obstacle unique
 		Retour=MOU;
 	}
-	else if(entree[0]=='M'&&entree[1]=='O'&&entree[2]=='B')
+	else if(strcmp("MOB",First)==0)
 	{//Detection par balayage
 		Retour=MOB;
 	}
-	else if(entree[0]=='S'&&entree[1]=='D')
+	else if(strcmp("SD",First)==0)
 	{//Generation son
 		Retour=SD;
 	}
-	else if(entree[0]=='L')
+	else if(strcmp("L",First)==0)
 	{//Allumage pointeur
 		Retour=L;
 	}
-	else if(entree[0]=='L'&&entree[1]=='S')
+	else if(strcmp("LS",First)==0)
 	{//Fin allumage pointeur
 		Retour=LS;
 	}
-	else if(entree[0]=='C'&&entree[1]=='S')
+	else if(strcmp("CS",First)==0)
 	{//Pilotage servo
 		Retour=CS;
 	}
-	else if(entree[0]=='P'&&entree[1]=='P'&&entree[2]=='H')
+	else if(strcmp("PPH",First)==0)
 	{//prise photo
 		Retour=PPH;
 	}
-	else if(entree[0]=='S'&&entree[1]=='P'&&entree[2]=='H')
+	else if(strcmp("SPH",First)==0)
 	{//Arret prise photo
 		Retour=SPH;
 	}
-	else if(entree[0]=='A'&&entree[1]=='U'&&entree[2]=='X')
+	else if(strcmp("AUX",First)==0)
 	{//cmd aux
 		Retour=AUX;
 	}
 	else
 	{
 		Retour=Empty;
+		
 	}
+	if(Retour!=Empty)
+		Ready_To_Continue();
+	else
+		Failed();
 	
 	return Retour;
 }
@@ -317,6 +286,7 @@ Retour_Serializer Parseur_Uart_1(char entree[])
 	}
 	else if(strstr(entree,"ACK")!= NULL)
 	{
+		
               type=ACK;
 	}
 	else if(strstr(entree,"0")!= NULL)
@@ -331,4 +301,11 @@ Retour_Serializer Parseur_Uart_1(char entree[])
 	return type;
 
 }
-   
+void Ready_To_Continue()
+{
+	serOutstring("\r\n>");
+}
+void Failed()
+{
+	serOutstring("\r\n#");
+}
