@@ -100,7 +100,7 @@ Message_Commande Parseur_Uart_0(char entree[])
 		
 		Retour=D;
 	}
-	else if(entree[0]=='E')
+	else if(strcmp("E",First)==0)
 	{//Fin d'épreuve
 		Retour=E;
 	}
