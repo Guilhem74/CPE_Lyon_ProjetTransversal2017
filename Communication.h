@@ -12,8 +12,8 @@ enum Message_Commande {Empty,D, E, Q, TV, A, B_message, S, RD, RG, RC,RA,G,ASS,M
 enum Retour_Serializer {EMPTY,ACK,NACK,TRUE,FALSE};
 typedef enum Retour_Serializer Retour_Serializer;
 typedef enum Message_Commande Message_Commande;
-Message_Commande Parseur_Uart_0();
-Retour_Serializer Parseur_Uart_1();
+Message_Commande Parseur_Uart_0(char entree[]);
+Retour_Serializer Parseur_Uart_1(char entree[]);
 void SerialEvent0();
 void SerialEvent1();
 
