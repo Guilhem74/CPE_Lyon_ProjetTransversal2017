@@ -27,9 +27,9 @@
 
 void CFG_INT_Ext(void)
 {
-	Disable_interrupt();
+
 	Config_INT1();
-	Enable_interrupt();
+
 }
 
 void Config_INT1(void)
@@ -41,20 +41,3 @@ void Config_INT1(void)
 }
 
 
-void Enable_interrupt(void)
-{
-	EA=1;
-}
-void Disable_interrupt(void)
-{
-	EA=0;
-}
-/*
-void CLEAR_TF2(void)
-{
-	TF2=0;//Delete flag
-}
-void CLEAR_IE1(void)
-{
-	IE1=0;//Delete flag
-}*/

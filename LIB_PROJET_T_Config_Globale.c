@@ -41,6 +41,7 @@ void Init_Device(void)
 	CFG_GPIO();
 	CFG_RESET();
 	CFG_INT_Ext();
+
 	CFG_Timers();
 	CFG_DAC0();
 	CFG_ADC();

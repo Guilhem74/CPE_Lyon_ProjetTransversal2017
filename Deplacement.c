@@ -1,4 +1,5 @@
 #include "Deplacement.h"
+#include "Communication.h"
 #include "Global.h"
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
@@ -11,6 +12,7 @@ extern int Vitesse_Robot;//pourcentage
 extern int X_POS,Y_POS,A_POS,X_DEST,Y_DEST,A_DEST,A_FIN;
 extern char Mooving;
 extern char Params_Change;
+extern char Deplacement_Demande;
 void DeplacementContinu(int speed)
 {
 			char Envoi[40];
@@ -25,8 +27,9 @@ void DeplacementContinu(int speed)
 void DeplacementDistance(int distance,int speed)
 {
 				char Envoi[40];
-				sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",distance,speed,distance,speed);
+				sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",distance*COEFF_CM_TO_TICK,speed,distance*COEFF_CM_TO_TICK,speed);
 				serOutstring_1(Envoi);
+
 	#if SERIAL0SPY
 		serOutstring(Envoi);
 	#endif
@@ -35,10 +38,11 @@ void DeplacementDistance(int distance,int speed)
 
 void Tourner(int angle,int speed)
 {
-	int distanceD=angle*512/90;
+	
 	char Envoi[40];
-				sprintf(Envoi,"digo 1:%d:%d 2:%d:%d \r",-distanceD,speed,distanceD,speed);
+				sprintf(Envoi,"digo 1:%0.0f:%d 2:%0.0f:%d \r",-angle*5.68,speed,angle*5.68,speed);
 				serOutstring_1(Envoi);
+
 	#if SERIAL0SPY
 		serOutstring(Envoi);
 	#endif
@@ -72,7 +76,6 @@ int Analyse_Deplacement()
 			 Tourner(erreur,Vitesse_Robot);
 			Params_Change=1;//1 Pour Angle a modifier
 			Mooving=1;
- 			serOutstring("Angle\n");
  			return 1;
  		}
  		else
@@ -80,16 +83,23 @@ int Analyse_Deplacement()
  			int dx=X_DEST-X_POS;
  			int dy=Y_DEST-Y_POS;
  			int Distance = sqrt(dx*dx+dy*dy);
+
  			if(Distance==0)
- 			{//Rien a deplacer
- 				//serOutstring("D0\n");
+ 			{//Rien a deplacer;
 				Params_Change=-1;//-1 Pour rien
+				if(Deplacement_Demande==1)
+				{
+					serOutstring("\r\nB");
+					Ready_To_Continue();
+
+				Deplacement_Demande=0;
+				}
  				return 0;
  			}
  			DeplacementDistance(Distance,Vitesse_Robot);
 			Params_Change=2;//2 Pour distance
 			Mooving=1;
- 			serOutstring("Distance\n");
+
  			Busy_UART1=1;
  			return 1;
  		}

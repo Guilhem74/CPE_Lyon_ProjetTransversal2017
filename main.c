@@ -51,6 +51,7 @@
 #include "LIB_PROJET_T_Config_Globale.h"
 #include "Communication.h"
 #include "Deplacement.h"
+#include "ServoMoteur.h"
 #include <string.h>
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
@@ -59,12 +60,13 @@
   #include <CFG_Globale.h>
 #endif
 #include <stdlib.h>
-
+#include "LIB_PROJET_T_ADC.h" 
 sbit BP = P3^7;     
 
 
 char Busy_UART1=0;
 char Mooving=0;
+char Deplacement_Demande=0;
 int Vitesse_Robot=20;//pourcentage 	
 int pulse_servo_H = 15; // correspond à un angle de 0°
 int angle = 0;
@@ -72,22 +74,31 @@ int distance_ultrason = 0;
 int compteur_telemetre=0;	
 int distance_infrarouge=0;
 unsigned long int Time_in_ms=0;
-int X_POS,Y_POS,A_POS,X_DEST,Y_DEST,A_DEST,A_FIN;
+int X_POS=0,Y_POS=0,A_POS=0,X_DEST=0,Y_DEST=0,A_DEST=0,A_FIN=0;
 int Params_Change=-1;//Permet de specifier le parametre a changer
+
+char telemetre_enabled = 0;
+
+char enable_cpt_telemetre=0;
+
 void main(void) {
 
 
 	int Time_PAST=0;
+	char Envoi[40];
+
 	Init_Device();
 	cfg_Clock_UART();
 		cfg_UARTS_mode1();
 		init_Serial_Buffer();   
 		init_Serial_Buffer_1();	
 		EA = 1;   
-		serOutstring("INIT 8051 DONE\r\n");
+
+		serOutstring("\r\nINIT 8051 DONE\r\n");
 Gen_Servo_Horizontal(0);
 	Ready_To_Continue();
 
+		
 
 	while(1) {
 	
@@ -95,6 +106,10 @@ Gen_Servo_Horizontal(0);
 	SerialEvent0();
 		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
 		{
+					distance_infrarouge=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+
+			sprintf(Envoi,"\r\nCapteur X:%d %d \r\n",distance_ultrason,distance_infrarouge);
+			serOutstring(Envoi);
 			Analyse_Deplacement();
 			Time_PAST=Time_in_ms;
 		}

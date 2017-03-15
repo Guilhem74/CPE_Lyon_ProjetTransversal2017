@@ -9,11 +9,16 @@ extern int distance_ultrason;
 extern int distance_infrarouge;
 extern int compteur_telemetre;
 extern unsigned long int Time_in_ms;
+extern int distance_ultrason ;
+extern char telemetre_enabled ;
+extern int compteur_telemetre;
+extern char enable_cpt_telemetre;
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 {
 
 	static int cpt_servo_H = 0; 
 	static int cmpt_time=0;
+	static int cpt_telemetre_interne = 0;
 	cmpt_time++;
 	if(cmpt_time==10)
 	{
@@ -36,32 +41,50 @@ void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 			P3 &= 0xBF; // eteind P3.6 le reste de la pulse
 	}
 	cpt_servo_H = cpt_servo_H + 1;
-		//////////////////////////////////////////
+	//////////////////////////////////////////
 	// Telemetre ultrason   --> Crée une pulse sur P6.4 et l'echo est renvoyé sur INT1 
 	//////////////////////////////////////////
-	if(compteur_telemetre ==0 )
+	if(telemetre_enabled && (cpt_telemetre_interne < 1) )
 	{
 			P6 |= 0xF0; // P6.4 à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
+			telemetre_enabled = 0;
+			enable_cpt_telemetre = 1;
 	}
 	else
 	{
 		P6 &= 0x0F; // P6.4 retourne à etat bas le reste du temps 
-		
+		cpt_telemetre_interne++;
 	}
-		compteur_telemetre++;//on compte
+		
+	if(cpt_telemetre_interne >= 50)
+	{
+		cpt_telemetre_interne = 0;
+		telemetre_enabled = 1;
+	}
+	
+	if(enable_cpt_telemetre)
+	{
+		compteur_telemetre++;
+	}
 	TF2 = 0;
 }
 
-void reception_telemetre_ultrason(void) interrupt 2
+
+void reception_telemetre_ultrason(void) interrupt 2//P2.5 ECHO
 {
+
 	distance_ultrason= 340*compteur_telemetre/(200) - 7; //calcul distance entre l'obstacle et le robot:
 	//onde à 340m/s, compteur incrémenté toutes les 0.1ms 
 	// On multiplie 340 par 100 pour avoir cm/s // On divise par 10000 compteur telemetre pour avoir en secondes et on divise par 2 (aller retour ECHO)
-	compteur_telemetre=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
 	
 	
-		distance_infrarouge=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
-
+	
+	enable_cpt_telemetre = 0; // on arrete de compter le temps entre la pulse et reception echo
+	compteur_telemetre=0; // reinitialisation compteur temps pulse-echo
+	
+				
+	
+	
 	IE1=0; // remets flag a 0*/
 }
 

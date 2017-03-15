@@ -1,5 +1,5 @@
 #include "Communication.h"
-
+#include "ServoMoteur.h"
 #include "Deplacement.h"
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
@@ -8,6 +8,7 @@ extern int Vitesse_Robot;//pourcentage
 extern int X_DEST,Y_DEST,A_FIN,X_POS,Y_POS,A_POS,A_DEST;
 extern char Mooving;
 extern char Params_Change;
+extern char Deplacement_Demande;
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -164,12 +165,14 @@ Message_Commande Parseur_Uart_0(char entree[])
 	}
 	else if(strcmp("RD",First)==0)
 	{//Rotation Droite
-		Tourner(90,Vitesse_Robot);
+		int Angle=90;
+		Tourner(Angle,Vitesse_Robot);
 		Retour=RD;
 	}
 	else if(strcmp("RG",First)==0)
 	{//Rotation Gauche
-		Tourner(-90,Vitesse_Robot);
+		int Angle=-90;
+		Tourner(Angle,Vitesse_Robot);
 		Retour=RG;
 	}
 	else if(strcmp("RC",First)==0)
@@ -225,7 +228,9 @@ Message_Commande Parseur_Uart_0(char entree[])
 			X_DEST=Val1;
 			Y_DEST=Val2;
 			A_FIN=Val3;
+			Deplacement_Demande=1;
 			Retour=G;
+			return Retour;
 		}
 		else
 			Retour=Empty;
@@ -240,10 +245,29 @@ Message_Commande Parseur_Uart_0(char entree[])
 	}
 	else if(strcmp("IPO",First)==0)
 	{//Init pos
-		Retour=IPO;
+		int Val1=0;
+		int Val2=0;
+		int Val3=0;
+		int Value_SS=sscanf(entree,"%s X:%d Y:%d A:%d",First,&Val1,&Val2,&Val3);
+		if(Value_SS==4)
+		{
+			X_POS=Val1;
+			Y_POS=Val2;
+			A_POS=Val3;
+			X_DEST=Val1;
+			Y_DEST=Val2;
+			A_DEST=Val3;
+			A_FIN=Val3;
+			Retour=IPO;
+		}
+		else
+			Retour=Empty;
 	}
 	else if(strcmp("POS",First)==0)
 	{//Pos
+		char Envoi[40];
+		sprintf(Envoi,"VPO X:%d Y:%d A:%d \r",X_POS,Y_POS,A_POS);
+		serOutstring(Envoi);
 		Retour=POS;
 	}
 	else if(strcmp("MOU",First)==0)
@@ -268,6 +292,21 @@ Message_Commande Parseur_Uart_0(char entree[])
 	}
 	else if(strcmp("CS",First)==0)
 	{//Pilotage servo
+		char Val1;
+		int Val2=0;
+		int Value_SS=sscanf(entree,"%s %s A:%d",First,&Val1,&Val2);
+		if(Val1=='V')
+		{
+			//TODO Comm to slave
+		}
+		else
+			Gen_Servo_Horizontal(Val2);
+				
+		
+
+	
+				
+		
 		Retour=CS;
 	}
 	else if(strcmp("PPH",First)==0)

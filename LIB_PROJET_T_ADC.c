@@ -13,8 +13,10 @@
 //-------------------------------------------------------------------------
 // Includes
 //------------------------------------------------------------------------------------
-#include <c8051f020.h>                    // SFR declarations
 #include "LIB_PROJET_T_ADC.h" 
+#include <stdio.h>
+#include <UART0_RingBuffer_lib.h>
+#include <UART1_RingBuffer_lib.h>
 
 //////////////////////////////////////////
 // Configuration ADC0 pour télémetre infrarouge
@@ -47,9 +49,11 @@ void CFG_ADC0(void)
 int ACQ_ADC(void)
 {
 	int Value_ADC=0;
+
 	AD0BUSY=1; 				//lancement conversion
  	while(AD0INT!=1) ;//Attente fin de conversion
 	Value_ADC=ADC0H;
+
 	AD0INT=0;					//raz le flag
 	if(Value_ADC>116) return (380-Value_ADC)/5.44;
 	else return (164-Value_ADC)/1.16; //retourne la distance en cm
