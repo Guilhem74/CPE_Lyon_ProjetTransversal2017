@@ -48,9 +48,9 @@ void Set_GPIO(void)
 	P1MDOUT&=0xFB;//P1.2 en drain ouvert 
 	P0MDOUT&=0xFC;
 	P0MDOUT|=0x01;
-	
-P2MDOUT&=0x5D;//P2.5
-	P2|=~0x5D;
+	P2MDOUT&=0x00;//Force P2 en drain ouvert
+	P2|=0xFF;
+
 	//Déclarations
 	XBR0|=0x7F;
 	XBR1|=0xFF;
