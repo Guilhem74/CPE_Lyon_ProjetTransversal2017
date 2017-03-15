@@ -50,6 +50,7 @@
 #include "ServoMoteur.h"
 #include "LIB_PROJET_T_Config_Globale.h"
 #include "Communication.h"
+#include "Deplacement.h"
 #include <string.h>
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
@@ -63,6 +64,7 @@ sbit BP = P3^7;
 
 
 char Busy_UART1=0;
+char Mooving=0;
 int Vitesse_Robot=20;//pourcentage 	
 int pulse_servo_H = 15; // correspond à un angle de 0°
 int angle = 0;
@@ -70,10 +72,12 @@ int distance_ultrason = 0;
 int compteur_telemetre=0;	
 int distance_infrarouge=0;
 unsigned long int Time_in_ms=0;
+int X_POS,Y_POS,A_POS,X_DEST,Y_DEST,A_DEST,A_FIN;
+int Params_Change=-1;//Permet de specifier le parametre a changer
 void main(void) {
 
 
-	
+	int Time_PAST=0;
 	Init_Device();
 	cfg_Clock_UART();
 		cfg_UARTS_mode1();
@@ -86,9 +90,14 @@ Gen_Servo_Horizontal(0);
 
 
 	while(1) {
-
+	
 	SerialEvent1();
 	SerialEvent0();
+		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
+		{
+			Analyse_Deplacement();
+			Time_PAST=Time_in_ms;
+		}
 	} 
 }
 

@@ -193,7 +193,7 @@ char c;
  	  RB_POPADVANCE(&in);                   /* adjust read position */
   	return c;
   }
-  else return 0;
+  else return -1;
 }
 // ************************************************************************************************
 //  serInchar_Bin: 	lecture d'un caractère dans le buffer de réception de la liaison série

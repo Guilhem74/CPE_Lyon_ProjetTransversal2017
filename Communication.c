@@ -5,6 +5,9 @@
 #include <UART1_RingBuffer_lib.h>
 extern char Busy_UART1;
 extern int Vitesse_Robot;//pourcentage 	
+extern int X_DEST,Y_DEST,A_FIN,X_POS,Y_POS,A_POS,A_DEST;
+extern char Mooving;
+extern char Params_Change;
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -13,7 +16,7 @@ void SerialEvent1()
 	char  c;
 		int i=0;
 	
-	if ((c=serInchar_1())!=0)
+	if ((c=serInchar_1())!=-1)
 	 {
 		 if(c=='\n'||c=='\r')
 		 {//Message de com ne pas tenir compte pour serializer
@@ -107,6 +110,7 @@ Message_Commande Parseur_Uart_0(char entree[])
 	else if(strcmp("Q",First)==0)
 	{//Arret d'urgence
 		serOutstring_1("stop\r");
+		Mooving=0;
 		Retour=Q;
 	}	
 	else if(strcmp("TV",First)==0)
@@ -155,11 +159,12 @@ Message_Commande Parseur_Uart_0(char entree[])
 	
 		serOutstring_1("stop\r");
 		Busy_UART1=1;
+		Mooving=0;
 		Retour=S;
 	}
 	else if(strcmp("RD",First)==0)
 	{//Rotation Droite
-		Tourner(-90,Vitesse_Robot);
+		Tourner(90,Vitesse_Robot);
 		Retour=RD;
 	}
 	else if(strcmp("RG",First)==0)
@@ -194,9 +199,9 @@ Message_Commande Parseur_Uart_0(char entree[])
 		if(Value_SS>=2)
 		{//Sens spécifié
 			if(sens=='D')
-				Sens_Val=-1;
-			else if(sens=='G')
 				Sens_Val=1;
+			else if(sens=='G')
+				Sens_Val=-1;
 		}
 		if(Value_SS==3)
 		{//Valeur spécifié
@@ -206,19 +211,31 @@ Message_Commande Parseur_Uart_0(char entree[])
 		Retour=RA;
 	}
 	else if(strcmp("ASS",First)==0)
-	{//Acquisition son
+	{//Acquisition son //TODO
 		Retour=ASS;
 	}
 	else if(strcmp("G",First)==0)
 	{//Deplacement BR
-		Retour=G;
+		int Val1=0;
+		int Val2=0;
+		int Val3=0;
+		int Value_SS=sscanf(entree,"%s X:%d Y:%d A:%d",First,&Val1,&Val2,&Val3);
+		if(Value_SS==4)
+		{
+			X_DEST=Val1;
+			Y_DEST=Val2;
+			A_FIN=Val3;
+			Retour=G;
+		}
+		else
+			Retour=Empty;
 	}
 	else if(strcmp("MI",First)==0)
-	{//Mesure courant
+	{//Mesure courant //TODO
 		Retour=MI;
 	}
 	else if(strcmp("ME",First)==0)
-	{//Mesure Energie
+	{//Mesure Energie //TODO
 		Retour=ME;
 	}
 	else if(strcmp("IPO",First)==0)
@@ -280,22 +297,40 @@ Message_Commande Parseur_Uart_0(char entree[])
 Retour_Serializer Parseur_Uart_1(char entree[])
 {
     Retour_Serializer type=EMPTY;
-	if(strstr(entree,"NACK")!= NULL)
+		char First[5];
+	sscanf(entree,"%s ",First);
+	if(strcmp("NACK",First)== 0)
 	{
               type=NACK;
+		serOutstring("\r\n#1");
+		Busy_UART1=0;
 	}
-	else if(strstr(entree,"ACK")!= NULL)
+	else if(strcmp("ACK",First)== 0)
 	{
 		
               type=ACK;
+		Busy_UART1=0;
 	}
-	else if(strstr(entree,"0")!= NULL)
+	else if(strcmp("0",First)== 0)
 	{
               type=FALSE;
+		Busy_UART1=0;
+		Mooving=0;
+		if(Params_Change==2)
+		{
+			X_POS=X_DEST;
+ 			Y_POS=Y_DEST;
+		}
+		else if(Params_Change==1)
+		{
+			A_POS=A_DEST;
+		}
 	}
-	else if(strstr(entree,"1")!= NULL)
-	{
+	else if(strcmp("1",First)== 0)
+	{//(PID algorithm busy) 
               type=TRUE;
+		Busy_UART1=0;
+		Mooving=1;
 	}
 
 	return type;
