@@ -68,7 +68,7 @@ char Busy_UART1=0;
 char Mooving=0;
 char Deplacement_Demande=0;
 int Vitesse_Robot=20;//pourcentage 	
-int pulse_servo_H = 15; // correspond à un angle de 0°
+int pulse_servo_H = 15,pulse_servo_V=15; // correspond à un angle de 0°
 int angle = 0;
 int distance_avant = 0;
 int distance_arriere = 0;

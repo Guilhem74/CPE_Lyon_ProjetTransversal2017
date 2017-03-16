@@ -105,7 +105,8 @@ Message_Commande Parseur_Uart_0(char entree[])
 	
 	if(strcmp("D",First)==0)
 	{
-		
+				serOutstring("Bienvenue dans la matrice\r\n");
+
 		Retour=D;
 	}
 	else if(strcmp("E",First)==0)
@@ -321,6 +322,7 @@ Message_Commande Parseur_Uart_0(char entree[])
 		if(Val1=='V')
 		{
 			//TODO Comm to slave
+			Gen_Servo_Vertical(Val2);
 		}
 		else
 			Gen_Servo_Horizontal(Val2);

@@ -36,7 +36,7 @@ void Set_GPIO(void)
 {
    XBR0=0x07;
 	 XBR1=0x94;
-	XBR2=0xC4;
+	XBR2=0x44;
 	P0MDOUT|=0x01;
 	P0MDOUT&=0xFD;
 	P0|=0x40;
