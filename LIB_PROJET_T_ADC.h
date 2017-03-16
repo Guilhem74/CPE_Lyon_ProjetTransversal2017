@@ -16,8 +16,10 @@ void CFG_ADC(void);
 void CFG_VREF(void);
 void CFG_ADC0(void);
 
+
 //////////////////////////////////////////
 // Calcul de la distance, retourne la distance en cm
 //////////////////////////////////////////
 int ACQ_ADC(void);
+int ACQ_ADC_2(void);
 #endif

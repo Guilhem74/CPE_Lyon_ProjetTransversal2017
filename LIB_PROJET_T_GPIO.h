@@ -23,6 +23,5 @@ void CFG_GPIO(void);
 
 void Set_GPIO(void);
 
-void Enable_Crossbar(void);
 
 #endif

@@ -43,18 +43,32 @@ void CFG_ADC0(void)
 	
 }
 
+
 //////////////////////////////////////////
 // Calcul de la distance, retourne la distance en cm
 //////////////////////////////////////////
 int ACQ_ADC(void)
 {
 	int Value_ADC=0;
-
+	AMX0SL=0x03; 	//On utilise le port AIN0.3,Utilisation AIN0.3 en unipolaire
 	AD0BUSY=1; 				//lancement conversion
  	while(AD0INT!=1) ;//Attente fin de conversion
 	Value_ADC=ADC0H;
-
 	AD0INT=0;					//raz le flag
 	if(Value_ADC>116) return (380-Value_ADC)/5.44;
 	else return (164-Value_ADC)/1.16; //retourne la distance en cm
+}
+
+int ACQ_ADC_2(void)
+{
+	int Value_ADC=0;
+	AMX0SL=0x05; 	//On utilise le port AIN0.5,Utilisation AIN0.5 en unipolaire
+	AD0BUSY=1; 				//lancement conversion
+ 	while(AD0INT!=1) ;//Attente fin de conversion
+	Value_ADC=ADC0H;
+	AD0INT=0;					//raz le flag
+	if(Value_ADC>116) return (380-Value_ADC)/5.44;
+	else return (164-Value_ADC)/1.16; //retourne la distance en cm
+	
+	
 }

@@ -70,22 +70,25 @@ char Deplacement_Demande=0;
 int Vitesse_Robot=20;//pourcentage 	
 int pulse_servo_H = 15; // correspond à un angle de 0°
 int angle = 0;
-int distance_ultrason = 0;
-int compteur_telemetre=0;	
-int distance_infrarouge=0;
+int distance_avant = 0;
+int distance_arriere = 0;
+int compteur_telemetre=0,compteur_telemetre_arriere=0;	
+
+int intensite=0;
+int duree_allumage=0;
+int duree_extinction=0;
+int nb_cycles=0;
+
 unsigned long int Time_in_ms=0;
 int X_POS=0,Y_POS=0,A_POS=0,X_DEST=0,Y_DEST=0,A_DEST=0,A_FIN=0;
 int Params_Change=-1;//Permet de specifier le parametre a changer
 
-char telemetre_enabled = 0;
-
-char enable_cpt_telemetre=0;
 
 void main(void) {
 
 
-	int Time_PAST=0;
-	char Envoi[40];
+	unsigned long int Time_PAST=0;
+	//char Envoi[40];
 
 	Init_Device();
 	cfg_Clock_UART();
@@ -97,7 +100,8 @@ void main(void) {
 		serOutstring("\r\nINIT 8051 DONE\r\n");
 Gen_Servo_Horizontal(0);
 	Ready_To_Continue();
-
+P2MDOUT=0x00;//Force P2 en drain ouvert
+	P2=0xFF;
 		
 
 	while(1) {
@@ -106,13 +110,14 @@ Gen_Servo_Horizontal(0);
 	SerialEvent0();
 		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
 		{
-					distance_infrarouge=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
-
-			sprintf(Envoi,"\r\nCapteur X:%d %d \r\n",distance_ultrason,distance_infrarouge);
-			serOutstring(Envoi);
+				
+			//sprintf(Envoi,"\r\nCapteur X:%d %d \r\n",distance_avant,distance_arriere);
+			//sprintf(Envoi,"\r\nCapteur Arriere:%d %d \r\n",distance_ultrason_arriere,distance_infrarouge_arriere);
+			//serOutstring(Envoi);
 			Analyse_Deplacement();
 			Time_PAST=Time_in_ms;
 		}
+
 	} 
 }
 

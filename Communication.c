@@ -9,6 +9,10 @@ extern int X_DEST,Y_DEST,A_FIN,X_POS,Y_POS,A_POS,A_DEST;
 extern char Mooving;
 extern char Params_Change;
 extern char Deplacement_Demande;
+extern int intensite;
+extern int duree_allumage;
+extern int duree_extinction;
+extern int nb_cycles;
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -53,7 +57,7 @@ void SerialEvent1()
  
 void SerialEvent0()
 {
-	#define SIZE_BUFF_RECEPT_UART0 20
+	#define SIZE_BUFF_RECEPT_UART0 30
 	static char Reception_Uart0[SIZE_BUFF_RECEPT_UART0];
 	static unsigned char Value_Rec0=0;
 	char  c;
@@ -284,10 +288,29 @@ Message_Commande Parseur_Uart_0(char entree[])
 	}
 	else if(strcmp("L",First)==0)
 	{//Allumage pointeur
-		Retour=L;
+		int Val1=0;
+		int Val2=0;
+		int Val3=0;
+		int Val4=0;
+		int Value_SS=sscanf(entree,"%s I:%d D:%d E:%d N:%d",First,&Val1,&Val2,&Val3,&Val4);
+		if(Value_SS==5)
+		{
+			 intensite=Val1;
+			 duree_allumage=Val2;
+			duree_extinction=Val3;
+			nb_cycles=Val4;
+			
+			Retour=L;
+		}
+		else
+			Retour=Empty;
 	}
 	else if(strcmp("LS",First)==0)
 	{//Fin allumage pointeur
+		intensite=0;
+				duree_allumage=0;
+				duree_extinction=0;
+				nb_cycles=0;
 		Retour=LS;
 	}
 	else if(strcmp("CS",First)==0)

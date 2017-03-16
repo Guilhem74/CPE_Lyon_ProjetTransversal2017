@@ -16,12 +16,12 @@
 // Includes
 //------------------------------------------------------------------------------------
 #include <c8051f020.h>                    // SFR declarations
-#include "LIB_PROJET_T_DAC.h"
+
 #include "LIB_PROJET_T_Config_Globale.h"
 #include "LIB_PROJET_T_GPIO.h"  
 #include "LIB_PROJET_T_INT_Ext.h"  
 #include "LIB_PROJET_T_Timers.h"
-#include "LIB_PROJET_T_Reset.h"
+
 #include "LIB_PROJET_T_Clock.h" 
 #include "LIB_PROJET_T_ADC.h" 
 //------------------------------------------------------------------------------
@@ -35,15 +35,15 @@
 void Init_Device(void)
 {
 	EA=0;
-	     WDTCN     = 0xDE;
-			WDTCN     = 0xAD;
+	WDTCN     = 0xDE;
+	WDTCN     = 0xAD;
 	CFG_Clock();
 	CFG_GPIO();
-	CFG_RESET();
+
 	CFG_INT_Ext();
 
 	CFG_Timers();
-	CFG_DAC0();
+
 	CFG_ADC();
 }
 #endif
