@@ -13,6 +13,7 @@ extern int intensite;
 extern int duree_allumage;
 extern int duree_extinction;
 extern int nb_cycles;
+extern char Ready;
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -102,15 +103,24 @@ Message_Commande Parseur_Uart_0(char entree[])
 
 	int j=0;
 	sscanf(entree,"%s ",First);
-	
+	if(strcmp("D",First)!=0&&Ready==0)
+	{//epreuve non commencé
+		P3 |= 0x80; // etat haut pour P3.7 (LED)
+		Failed();
+		return 0;
+	}
 	if(strcmp("D",First)==0)
 	{
 				serOutstring("Bienvenue dans la matrice\r\n");
-
+		P3 &= ~0x80; // etat haut pour P3.7 (LED)
+Ready=1;
 		Retour=D;
 	}
 	else if(strcmp("E",First)==0)
 	{//Fin d'épreuve
+		Ready=0;
+		serOutstring_1("stop\r");
+
 		Retour=E;
 	}
 	else if(strcmp("Q",First)==0)

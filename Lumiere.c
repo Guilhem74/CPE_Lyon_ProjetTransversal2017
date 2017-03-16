@@ -2,6 +2,10 @@
 #include <c8051f020.h>    
 extern char LED_activee;
 
+extern int intensite;
+extern int duree_allumage;
+extern int duree_extinction;
+extern int nb_cycles;
 int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb_cycles){
 	
 	static int cpt_LED_intensite = 0; 
@@ -11,9 +15,9 @@ int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb
 	static int cpt_LED_cycles = 0; 
 
 
-		if(cpt_LED_cycles<=nb_cycles)
+		if(cpt_LED_cycles<nb_cycles)
 		{
-				if(cpt_LED_allumage<=duree_allumage*1000)
+				if(cpt_LED_allumage<duree_allumage*1000)
 				{
 						if(cpt_LED_intensite >= 100) // si on arrive a 10ms
 						{
@@ -32,7 +36,7 @@ int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb
 						cpt_LED_allumage++;
 						cpt_LED_temps++;
 				}
-				else if(cpt_LED_extinction<=duree_extinction*1000)
+				else if(cpt_LED_extinction<duree_extinction*1000)
 				{
 						P3 &= 0x7F; // eteind P3.7 pendant la durée d'extinction
 						cpt_LED_extinction++;

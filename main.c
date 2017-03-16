@@ -67,6 +67,7 @@ sbit BP = P3^7;
 char Busy_UART1=0;
 char Mooving=0;
 char Deplacement_Demande=0;
+char Ready=0;
 int Vitesse_Robot=20;//pourcentage 	
 int pulse_servo_H = 15,pulse_servo_V=15; // correspond à un angle de 0°
 int angle = 0;
