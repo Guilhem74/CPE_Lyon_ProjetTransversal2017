@@ -79,6 +79,8 @@ int intensite=0;
 int duree_allumage=0;
 int duree_extinction=0;
 int nb_cycles=0;
+int distances_telemetre[36];
+int *launch_detection;
 
 unsigned long int Time_in_ms=0;
 int X_POS=0,Y_POS=0,A_POS=0,X_DEST=0,Y_DEST=0,A_DEST=0,A_FIN=0;
@@ -104,11 +106,15 @@ Gen_Servo_Horizontal(0);
 P2MDOUT=0x00;//Force P2 en drain ouvert
 	P2=0xFF;
 		
+	*launch_detection = 1;
 
 	while(1) {
 	
-	SerialEvent1();
-	SerialEvent0();
+		SerialEvent1();
+		SerialEvent0();
+		
+		detection_obstacles(launch_detection, 1, 30); // lance la detection et lorsque detection finie, modifie launch_detection à 0 via pointeur pour arreter completement la detection
+
 		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
 		{
 				

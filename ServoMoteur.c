@@ -16,6 +16,10 @@ extern int intensite;
 extern int duree_allumage;
 extern int duree_extinction;
 extern int nb_cycles;
+extern int distances_telemetre[36];
+extern int *launch_detection;
+
+
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 {
 
@@ -158,3 +162,44 @@ void Gen_Servo_Vertical(int angle)
 	}
 
 }	
+
+void detection_obstacles(int *boolean, int mode, int pas_angle)
+{
+	static int angle_servo = -90;
+	static unsigned long  int Time_Past_detection = 0;
+	int n	= 360/pas_angle;
+	static int iterateur_telemetre = 0;
+	
+
+	if(*boolean == 1 && angle <= 90)
+	{
+				Gen_Servo_Horizontal(angle_servo);
+				
+				if(Time_in_ms > (Time_Past_detection + 500) )
+				{
+					distances_telemetre[iterateur_telemetre] = distance_avant;
+					angle_servo+=pas_angle;
+					Time_Past_detection = Time_in_ms;
+					
+				}	
+				if(mode == 2) // detection a 360°
+				{
+						distances_telemetre[iterateur_telemetre+n/2] = distance_arriere;
+				}
+				
+				iterateur_telemetre++;
+				
+			
+	}
+	else if(angle_servo > 90)
+	{
+			angle_servo = -90;
+		  iterateur_telemetre = 0;
+		  *boolean = 0;
+		  // envoyer message de tout le tableau
+		  // clean tableau 
+		  // clean_distance tableau;
+	}
+
+	
+}
