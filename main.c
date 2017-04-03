@@ -67,24 +67,26 @@ sbit BP = P3^7;
 char Busy_UART1=0;
 char Mooving=0;
 char Deplacement_Demande=0;
-char Ready=0;
 int Vitesse_Robot=20;//pourcentage 	
-int pulse_servo_H = 15,pulse_servo_V=15; // correspond à un angle de 0°
+int pulse_servo_H = 15; // correspond à un angle de 0°
+int pulse_servo_V = 15; // correspond à un angle de 0°
 int angle = 0;
 int distance_avant = 0;
 int distance_arriere = 0;
-int compteur_telemetre=0,compteur_telemetre_arriere=0;	
-
+int compteur_telemetre=-50,compteur_telemetre_arriere=-50;	
 int intensite=0;
 int duree_allumage=0;
 int duree_extinction=0;
 int nb_cycles=0;
 int distances_telemetre[36];
-int *launch_detection;
+int launch_detection;
+int mode_detection;
+int pas_angle_detection;
 
 unsigned long int Time_in_ms=0;
 int X_POS=0,Y_POS=0,A_POS=0,X_DEST=0,Y_DEST=0,A_DEST=0,A_FIN=0;
 int Params_Change=-1;//Permet de specifier le parametre a changer
+
 
 
 void main(void) {
@@ -101,20 +103,18 @@ void main(void) {
 		EA = 1;   
 
 		serOutstring("\r\nINIT 8051 DONE\r\n");
-Gen_Servo_Horizontal(0);
+		Gen_Servo_Horizontal(45);
 	Ready_To_Continue();
-P2MDOUT=0x00;//Force P2 en drain ouvert
-	P2=0xFF;
+	
 		
-	*launch_detection = 1;
+		launch_detection = 0; // parseur doit definir a 1 (ainsi que mode_detection et pas_angle_detection)
 
 	while(1) {
 	
+	 detection_obstacles(mode_detection,pas_angle_detection);
+		
 		SerialEvent1();
 		SerialEvent0();
-		
-		detection_obstacles(launch_detection, 1, 30); // lance la detection et lorsque detection finie, modifie launch_detection à 0 via pointeur pour arreter completement la detection
-
 		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
 		{
 				

@@ -36,16 +36,19 @@ void Set_GPIO(void)
 {
    XBR0=0x07;
 	 XBR1=0x94;
-	XBR2=0x44;
+	XBR2=0xC4;
 	P0MDOUT|=0x01;
 	P0MDOUT&=0xFD;
 	P0|=0x40;
 	P1MDOUT|=0x11;
-	P1MDOUT&=0xFD;
+	P1MDOUT&=0xF3; // P1.2 P1.3 INT0 et INT1
 	P1|=0x70;
 	P3MDOUT|=0xD0;
 	P74OUT |= 0x30;
 	//P0MDOUT
+	
+	P2MDOUT=0x00;//Force P2 en drain ouvert
+	P2=0xFF;
 }
 
 

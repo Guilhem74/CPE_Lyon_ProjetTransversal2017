@@ -17,17 +17,51 @@ extern int duree_allumage;
 extern int duree_extinction;
 extern int nb_cycles;
 extern int distances_telemetre[36];
-extern int *launch_detection;
-
+extern int launch_detection;
+extern int mode_detection;
+extern int pas_angle_detection;
 
 void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
+{
+
+	TF2 = 0;
+	
+	//////////////////////////////////////////
+	// Telemetre ultrason   --> Crée une pulse sur P6.4 et l'echo est renvoyé sur INT1 
+	//////////////////////////////////////////
+	if(compteur_telemetre ==0 )
+	{
+			P6 |= 0x10; // P6.4   à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
+	}
+	else
+	{
+		P6 &= 0xEF; // P6.4 retourne à etat bas le reste du temps 
+		
+	}
+	
+	if(compteur_telemetre_arriere ==0 )
+	{
+			P6 |= 0x20; // et P6.5 à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
+	}
+	else
+	{
+			P6 &= 0xDF; //  et P6.5 retourne à etat bas le reste du temps 
+		
+	}
+		compteur_telemetre++;//on compte
+		compteur_telemetre_arriere++;
+
+}
+
+void ISR_Timer3(void) interrupt 14 // interrupt toutes les 0.1ms
 {
 
 	static int cpt_servo_H = 0; 
 	static int cpt_servo_V = 0; 
 	static int cmpt_time=0;
-	TF2 = 0;
-	//P3|=0x10;
+
+	TMR3CN &= 0x7F; //TF3 remet flag a 0
+	
 	cmpt_time++;
 	if(cmpt_time==10)
 	{
@@ -50,6 +84,7 @@ void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 			P3 &= 0xBF; // eteind P3.6 le reste de la pulse
 	}
 	cpt_servo_H = cpt_servo_H + 1;
+	
 	//////////////////////////////////////////
 	// Servomoteur Vertical   --> Crée une pulse de periode 20ms avec etat haut entre 0.5 et 2.8ms (lié à l'angle voulue)
 	//////////////////////////////////////////
@@ -66,29 +101,7 @@ void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 			P3 &= 0xEF; // eteind P3.6 le reste de la pulse
 	}
 	cpt_servo_V = cpt_servo_V + 1;
-	//////////////////////////////////////////
-	// Telemetre ultrason   --> Crée une pulse sur P6.4 et l'echo est renvoyé sur INT1 
-	//////////////////////////////////////////
-		if(compteur_telemetre ==0 )
-	{
-			P6 |= 0x10; // P6.4  et P6.5 à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
-	}
-	else
-	{
-		P6 &= 0xEF; // P6.4 et P6.5 retourne à etat bas le reste du temps 
-		
-	}
-	if(compteur_telemetre_arriere ==0 )
-	{
-			P6 |= 0x20; // P6.4  et P6.5 à l'état haut pour 100us(pulse) pour declencher trig telemetre ultrason
-	}
-	else
-	{
-		P6 &= 0xDF; // P6.4 et P6.5 retourne à etat bas le reste du temps 
-		
-	}
-		compteur_telemetre++;//on compte
-		compteur_telemetre_arriere++;
+	
 	
 		//////////////////////////////////////////
 	//Pilotage led en temps et en intensité en fonction de l'épreuve
@@ -97,7 +110,6 @@ void ISR_Timer2(void) interrupt 5 // interrupt toutes les 0.1ms
 	//P3&=0xEF;
 	
 }
-
 
 void reception_telemetre_ultrason(void) interrupt 2//P2.5 ECHO
 {
@@ -109,7 +121,7 @@ void reception_telemetre_ultrason(void) interrupt 2//P2.5 ECHO
 		distance_avant=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
 	
 		compteur_telemetre=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
-
+			
 	
 	
 	IE1=0; // remets flag a 0*/
@@ -163,7 +175,7 @@ void Gen_Servo_Vertical(int angle)
 
 }	
 
-void detection_obstacles(int *boolean, int mode, int pas_angle)
+void detection_obstacles(int mode, int pas_angle)
 {
 	static int angle_servo = -90;
 	static unsigned long  int Time_Past_detection = 0;
@@ -171,23 +183,27 @@ void detection_obstacles(int *boolean, int mode, int pas_angle)
 	static int iterateur_telemetre = 0;
 	
 
-	if(*boolean == 1 && angle <= 90)
+	if(launch_detection == 1 && angle_servo <= 90)
 	{
 				Gen_Servo_Horizontal(angle_servo);
 				
-				if(Time_in_ms > (Time_Past_detection + 500) )
+				if(Time_in_ms > (Time_Past_detection + 1500) )
 				{
 					distances_telemetre[iterateur_telemetre] = distance_avant;
 					angle_servo+=pas_angle;
 					Time_Past_detection = Time_in_ms;
 					
+					if(mode == 2) // detection a 360°
+					{
+							distances_telemetre[iterateur_telemetre+n/2] = distance_arriere;
+					}
+					
+					iterateur_telemetre++;
+					
 				}	
-				if(mode == 2) // detection a 360°
-				{
-						distances_telemetre[iterateur_telemetre+n/2] = distance_arriere;
-				}
 				
-				iterateur_telemetre++;
+				
+				
 				
 			
 	}
@@ -195,7 +211,7 @@ void detection_obstacles(int *boolean, int mode, int pas_angle)
 	{
 			angle_servo = -90;
 		  iterateur_telemetre = 0;
-		  *boolean = 0;
+		  launch_detection = 0;
 		  // envoyer message de tout le tableau
 		  // clean tableau 
 		  // clean_distance tableau;

@@ -4,5 +4,5 @@
 
 void Gen_Servo_Horizontal(int angle);
 void Gen_Servo_Vertical(int angle);
-void detection_obstacles(int *boolean, int mode, int pas_angle);
+void detection_obstacles(int mode, int pas_angle);
 #endif
