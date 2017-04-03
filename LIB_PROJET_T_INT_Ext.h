@@ -26,6 +26,7 @@ void CFG_INT_Ext(void);
 void Enable_interrupt(void);
 void Disable_interrupt(void);
 void Config_INT1(void);
+void Config_INT0(void);
 void CLEAR_TF2(void);
 void CLEAR_IE1(void);
 
