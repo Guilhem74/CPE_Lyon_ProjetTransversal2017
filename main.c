@@ -73,15 +73,20 @@ int pulse_servo_V = 15; // correspond à un angle de 0°
 int angle = 0;
 int distance_avant = 0;
 int distance_arriere = 0;
-int compteur_telemetre=-50,compteur_telemetre_arriere=-50;	
+int distance_avant_IR = 0; 
+int distance_arriere_IR = 0;
+unsigned long int Time_Past_Servo=0;
+int Servo_angle_modifie=0;
+long int compteur_telemetre=-50,compteur_telemetre_arriere=-50;	
 int intensite=0;
 int duree_allumage=0;
 int duree_extinction=0;
 int nb_cycles=0;
 int distances_telemetre[36];
-int launch_detection;
+int launch_detection=0;
 int mode_detection;
 int pas_angle_detection;
+char Ready=0;
 
 unsigned long int Time_in_ms=0;
 int X_POS=0,Y_POS=0,A_POS=0,X_DEST=0,Y_DEST=0,A_DEST=0,A_FIN=0;
@@ -103,15 +108,16 @@ void main(void) {
 		EA = 1;   
 
 		serOutstring("\r\nINIT 8051 DONE\r\n");
-		Gen_Servo_Horizontal(45);
+		Gen_Servo_Horizontal(0);
+				Gen_Servo_Vertical(0);
+
 	Ready_To_Continue();
 	
 		
-		launch_detection = 0; // parseur doit definir a 1 (ainsi que mode_detection et pas_angle_detection)
 
 	while(1) {
 	
-	 detection_obstacles(mode_detection,pas_angle_detection);
+	  detection_obstacles(mode_detection,pas_angle_detection);
 		
 		SerialEvent1();
 		SerialEvent0();
@@ -120,11 +126,23 @@ void main(void) {
 				
 			//sprintf(Envoi,"\r\nCapteur X:%d %d \r\n",distance_avant,distance_arriere);
 			//sprintf(Envoi,"\r\nCapteur Arriere:%d %d \r\n",distance_ultrason_arriere,distance_infrarouge_arriere);
-			//serOutstring(Envoi);
 			Analyse_Deplacement();
 			Time_PAST=Time_in_ms;
+			if(distance_arriere>40)
+				distance_arriere_IR=ACQ_ADC_2();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+			if(distance_avant>40)
+				distance_avant_IR=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+	
 		}
-
+			if(Time_in_ms>(Time_Past_Servo+80)&&Servo_angle_modifie>=1)//Boucle de 10 ms min
+		{
+				
+			if(Servo_angle_modifie==1)
+				serOutstring("AS H\r\n");
+			else if(Servo_angle_modifie==2)	
+				serOutstring("AS V\r\n");
+			Servo_angle_modifie=0;
+		}
 	} 
 }
 

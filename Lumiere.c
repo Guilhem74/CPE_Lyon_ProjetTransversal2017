@@ -6,13 +6,13 @@ extern int intensite;
 extern int duree_allumage;
 extern int duree_extinction;
 extern int nb_cycles;
-int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb_cycles){
+int pilotage_led(){
 	
-	static int cpt_LED_intensite = 0; 
-	static int cpt_LED_allumage = 0; 
-	static int cpt_LED_extinction = 0; 
-	static int cpt_LED_temps = 0; 
-	static int cpt_LED_cycles = 0; 
+	static unsigned long int cpt_LED_intensite = 0; 
+	static unsigned long int cpt_LED_allumage = 0; 
+	static unsigned long int cpt_LED_extinction = 0; 
+	static unsigned long int cpt_LED_temps = 0; 
+	static unsigned long int cpt_LED_cycles = 0; 
 
 
 		if(cpt_LED_cycles<nb_cycles)
@@ -43,12 +43,12 @@ int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb
 						cpt_LED_temps++;
 				}
                 
-                if(cpt_LED_temps>=(duree_allumage+duree_extinction)*1000){
+          if(cpt_LED_temps>=(duree_allumage+duree_extinction)*1000){
                     cpt_LED_cycles++;
                     cpt_LED_temps=0;
 										cpt_LED_allumage=0;
 										cpt_LED_extinction=0;
-                }
+            }
 
 			}else{
 					cpt_LED_temps=0;
@@ -59,6 +59,7 @@ int pilotage_led(int intensite, int duree_allumage, int duree_extinction, int nb
 					duree_allumage=0;
 					duree_extinction=0;
 					nb_cycles=0;
+				P3 &= 0x7F; // eteind P3.7 le reste de la pulse
 					return 1; //les cycles sont finis
 			}
 		

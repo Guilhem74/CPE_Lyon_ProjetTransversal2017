@@ -1,6 +1,7 @@
 #include "Communication.h"
 #include "ServoMoteur.h"
 #include "Deplacement.h"
+#include <stdlib.h>
 #include <UART0_RingBuffer_lib.h>
 #include <UART1_RingBuffer_lib.h>
 extern char Busy_UART1;
@@ -14,6 +15,14 @@ extern int duree_allumage;
 extern int duree_extinction;
 extern int nb_cycles;
 extern char Ready;
+extern int launch_detection;
+extern int mode_detection;
+extern int pas_angle_detection;
+extern unsigned long int Time_Past_Servo;
+extern unsigned long int Time_in_ms;
+extern int Servo_angle_modifie;
+extern int distance_avant, distance_arriere;
+extern int distance_avant_IR, distance_arriere_IR;
 void SerialEvent1()
 {
 	#define SIZE_BUFF_RECEPT_UART1 5
@@ -57,7 +66,7 @@ void SerialEvent1()
  
  
 void SerialEvent0()
-{
+{ 
 	#define SIZE_BUFF_RECEPT_UART0 30
 	static char Reception_Uart0[SIZE_BUFF_RECEPT_UART0];
 	static unsigned char Value_Rec0=0;
@@ -99,7 +108,7 @@ void SerialEvent0()
 Message_Commande Parseur_Uart_0(char entree[])
 {
     Message_Commande Retour=Empty;
-	char First[4];
+	char First[4]="";
 
 	int j=0;
 	sscanf(entree,"%s ",First);
@@ -287,11 +296,54 @@ Ready=1;
 	}
 	else if(strcmp("MOU",First)==0)
 	{//Detection obstacle unique
+		char Val1='\0';
+		int Value_SS=sscanf(entree,"%s %c",First,&Val1);
+		if(Val1=='D')
+		{		char Envoi[40];
+				if(abs(distance_avant)>40)
+					sprintf(Envoi,"Distance IR Avant %d\r",distance_avant_IR);
+				else
+							sprintf(Envoi,"Distance Avant %d\r",distance_avant);
+			serOutstring(Envoi);
+		}
+		else
+		{
+			char Envoi[40];
+				if(abs(distance_arriere)>40)
+					sprintf(Envoi,"Distance IR arriere %d\r",distance_arriere_IR);
+				else
+					sprintf(Envoi,"Distance arriere %d\r",distance_arriere);
+			serOutstring(Envoi);
+		}
 		Retour=MOU;
 	}
 	else if(strcmp("MOB",First)==0)
 	{//Detection par balayage
-		Retour=MOB;
+		char Val1[3]=0;
+		int Val2=0;
+		int Value_SS=sscanf(entree,"%s %s A:%d",First,Val1,&Val2);
+		if(Value_SS==3)
+		{
+
+							launch_detection = 1; 
+		mode_detection=2;
+			pas_angle_detection=Val2;
+			Retour=MOB;
+		}
+		else if (Value_SS==2)
+		{
+			int Value_SS=sscanf(entree,"%s A:%d",First,&Val2);
+			char Envoi[40];
+					launch_detection = 1; 
+		mode_detection=1;
+			pas_angle_detection=Val2;
+					
+		sprintf(Envoi,"%d %d\r",pas_angle_detection,mode_detection);
+			serOutstring(Envoi);
+			Retour=MOB;
+		}
+			Retour=Empty;
+		
 	}
 	else if(strcmp("SD",First)==0)
 	{//Generation son
@@ -314,7 +366,14 @@ Ready=1;
 			Retour=L;
 		}
 		else
-			Retour=Empty;
+		{
+			intensite=100;
+			 duree_allumage=100;
+			duree_extinction=0;
+			nb_cycles=1;
+			
+			Retour=L;
+		}
 	}
 	else if(strcmp("LS",First)==0)
 	{//Fin allumage pointeur
@@ -333,16 +392,26 @@ Ready=1;
 		{
 			//TODO Comm to slave
 			Gen_Servo_Vertical(Val2);
+			Time_Past_Servo =Time_in_ms;
+			Servo_angle_modifie=2;
+			Retour=CS;
+		}
+		else if(Val1=='H')
+		{
+			Gen_Servo_Horizontal(Val2);
+			Time_Past_Servo =Time_in_ms;
+					Servo_angle_modifie=1;
+			Retour=CS;
 		}
 		else
-			Gen_Servo_Horizontal(Val2);
+			Retour=Empty;
 				
 		
 
 	
 				
 		
-		Retour=CS;
+		
 	}
 	else if(strcmp("PPH",First)==0)
 	{//prise photo

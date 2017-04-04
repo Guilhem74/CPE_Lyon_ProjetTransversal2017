@@ -40,6 +40,7 @@ void CFG_ADC0(void)
 	AD0LJST=1;
 	AD0EN=1; 			//Activation ADC0
 	AD0INT=0; 		//ADC0 pret
+	ADC0CF &=0x0F;
 	
 }
 

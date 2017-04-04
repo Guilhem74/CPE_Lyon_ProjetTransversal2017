@@ -30,6 +30,7 @@ unsigned char RTC_Heures=0;
 void CFG_Timers(void)
 {
 Config_Timer2();
+Config_Timer3();
 }
 void Config_Timer2(void)
 {
@@ -55,7 +56,16 @@ void Config_Timer2(void)
 	PT2=1;
 	ET2=1;
 		
- //  IE   |= 0x20;   // On autorise les interruptions généré par le timer 2
+ // IE   |= 0x20;   // On autorise les interruptions généré par le timer 2
 	 //PT2 = 1;
    //T2CON |= 0x04; // On lance le timer
+}
+void Config_Timer3(void)
+{
+	TMR3CN |=0x04;
+	TMR3RLH =0xFF;
+		TMR3RLL =0x46;
+	TMR3L=0xFF;
+	TMR3H=0xFF;
+	EIE2|=0x01;
 }

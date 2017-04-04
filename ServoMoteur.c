@@ -2,14 +2,15 @@
 #include "Global.h"
 #include "LIB_PROJET_T_ADC.h" 
 #include "Lumiere.h" 
-
-#include <c8051f020.h>   
+#include <UART0_RingBuffer_lib.h>
+#include <stdio.h>
+ 
 extern int pulse_servo_H,pulse_servo_V;
 extern int angle;
 extern int distance_avant, distance_arriere;
 extern int compteur_telemetre, compteur_telemetre_arriere;
 extern unsigned long int Time_in_ms;
-extern int compteur_telemetre;
+
 extern int distances_telemetre[36];
 extern int launch_detection;
 extern int mode_detection;
@@ -100,7 +101,7 @@ void ISR_Timer3(void) interrupt 14 // interrupt toutes les 0.1ms
 		//////////////////////////////////////////
 	//Pilotage led en temps et en intensité en fonction de l'épreuve
 	//////////////////////////////////////////
-    pilotage_led(intensite, duree_allumage, duree_extinction, nb_cycles);
+    pilotage_led();
 	//P3&=0xEF;
 	
 }
@@ -111,8 +112,8 @@ void reception_telemetre_ultrason(void) interrupt 2//P2.5 ECHO
 	distance_avant= 340*compteur_telemetre/(200) - 7; //calcul distance entre l'obstacle et le robot:
 	//onde à 340m/s, compteur incrémenté toutes les 0.1ms 
 	// On multiplie 340 par 100 pour avoir cm/s // On divise par 10000 compteur telemetre pour avoir en secondes et on divise par 2 (aller retour ECHO)
-	if(distance_avant>25)
-		distance_avant=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+	//if(distance_avant>25)
+		//distance_avant=ACQ_ADC();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
 	
 		compteur_telemetre=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
 			
@@ -126,8 +127,8 @@ void reception_telemetre_ultrason_arriere(void) interrupt 0
 	distance_arriere= 340*compteur_telemetre_arriere/(200) - 7; //calcul distance entre l'obstacle et le robot:
 	//onde à 340m/s, compteur incrémenté toutes les 0.1ms 
 	// On multiplie 340 par 100 pour avoir cm/s // On divise par 10000 compteur telemetre pour avoir en secondes et on divise par 2 (aller retour ECHO)
-	if(distance_arriere>25)
-				distance_arriere=ACQ_ADC_2();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
+	//if(distance_arriere>25)
+				//distance_arriere=ACQ_ADC_2();//Mesure de l'infrarouge , ainsi temps d'acquisition identique
 
 		compteur_telemetre_arriere=-DELAY_ULTRASON; // reinitialisation compteur temps pulse-echo
 	
@@ -145,7 +146,7 @@ void Gen_Servo_Horizontal(int angle)
 {
 	if( (angle <= 90) && (angle >= -90) )
 	{
-		pulse_servo_H = (15*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
+		pulse_servo_H = (11*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
 		// -90° = 0.9ms / 0° = 1.5ms / 90° = 2.1ms //
 		// Equation regi par le systeme : tpulse = 15 + angle*0.07 et on multiplie le tout par 1000 afin d'eviter les arrondis puis on redivise par 1000
 	}
@@ -161,7 +162,7 @@ void Gen_Servo_Vertical(int angle)
 {
 	if( (angle <= 90) && (angle >= -90) )
 	{
-		pulse_servo_V = (15*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
+		pulse_servo_V = (11*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
 		// -90° = 0.9ms / 0° = 1.5ms / 90° = 2.1ms //
 		// Equation regi par le systeme : tpulse = 15 + angle*0.07 et on multiplie le tout par 1000 afin d'eviter les arrondis puis on redivise par 1000
 		
@@ -177,7 +178,7 @@ void detection_obstacles(int mode, int pas_angle)
 	static int iterateur_telemetre = 0;
 	
 
-	if(launch_detection == 1 && angle_servo <= 90)
+	if( (launch_detection == 1) && (angle_servo <= 90) )
 	{
 				Gen_Servo_Horizontal(angle_servo);
 				
@@ -195,17 +196,24 @@ void detection_obstacles(int mode, int pas_angle)
 					iterateur_telemetre++;
 					
 				}	
-				
-				
-				
-				
-			
+
+					serOutstring("D\r");
+
 	}
 	else if(angle_servo > 90)
 	{
+
+		char Envoi[200]="";
+		int i=0;
 			angle_servo = -90;
 		  iterateur_telemetre = 0;
 		  launch_detection = 0;
+		for( i=0;i<n;i++)
+		{
+					sprintf(Envoi,"%s %d:%d",Envoi,-90+i*pas_angle,distances_telemetre[i]);
+		}
+							sprintf(Envoi,"%s \r",Envoi);
+		serOutstring(Envoi);
 		  // envoyer message de tout le tableau
 		  // clean tableau 
 		  // clean_distance tableau;

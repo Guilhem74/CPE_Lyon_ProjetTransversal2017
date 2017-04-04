@@ -21,7 +21,7 @@
 //*****************************************************************************
 
 void CFG_Timers(void);
-
+void Config_Timer3(void);
 void Config_Timer2(void);
 void Config_Timer1(void);
 

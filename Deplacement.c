@@ -40,7 +40,7 @@ void Tourner(int angle,int speed)
 {
 	
 	char Envoi[40];
-				sprintf(Envoi,"digo 1:%0.0f:%d 2:%0.0f:%d \r",-angle*5.68,speed,angle*5.68,speed);
+				sprintf(Envoi,"digo 1:%0.0f:%d 2:%0.0f:%d \r",-angle*5.40,speed,angle*5.40,speed);
 				serOutstring_1(Envoi);
 
 	#if SERIAL0SPY
