@@ -31,6 +31,7 @@ void CFG_Timers(void)
 {
 Config_Timer2();
 Config_Timer3();
+	Timer0_Init ();
 }
 void Config_Timer2(void)
 {
@@ -68,4 +69,58 @@ void Config_Timer3(void)
 	TMR3L=0xFF;
 	TMR3H=0xFF;
 	EIE2|=0x01;
+}
+
+
+void Timer0_Init (void)
+{
+   TCON  &= ~0x30;                     // STOP Timer0 and clear overflow flag
+   TMOD  &= ~0x0f;                     // configure Timer0 to 16-bit mode
+   TMOD  |=  0x01;
+   CKCON |=  0x08;                     // Timer0 counts SYSCLKs
+}
+//-----------------------------------------------------------------------------
+// Timer0_ms
+//-----------------------------------------------------------------------------
+//
+// Configure Timer0 to delay <ms> milliseconds before returning.
+//
+void Timer0_ms (unsigned ms)
+{
+   unsigned i;                         // millisecond counter
+   TCON  &= ~0x30;                     // STOP Timer0 and clear overflow flag
+   TMOD  &= ~0x0f;                     // configure Timer0 to 16-bit mode
+   TMOD  |=  0x01;
+   CKCON |=  0x08;                     // Timer0 counts SYSCLKs
+   for (i = 0; i < ms; i++) {          // count milliseconds
+      TR0 = 0;                         // STOP Timer0
+      TH0 = (-SYSCLK/1000) >> 8;       // set Timer0 to overflow in 1ms
+      TL0 = -SYSCLK/1000;
+      TR0 = 1;                         // START Timer0
+      while (TF0 == 0);                // wait for overflow
+      TF0 = 0;                         // clear overflow indicator
+   }
+}
+
+//-----------------------------------------------------------------------------
+// Timer0_us
+//-----------------------------------------------------------------------------
+//
+// Configure Timer0 to delay <us> microseconds before returning.
+//
+void Timer0_us (unsigned us)
+{
+   unsigned i;                         // millisecond counter
+   TCON  &= ~0x30;                     // STOP Timer0 and clear overflow flag
+   TMOD  &= ~0x0f;                     // configure Timer0 to 16-bit mode
+   TMOD  |=  0x01;
+   CKCON |=  0x08;                     // Timer0 counts SYSCLKs
+   for (i = 0; i < us; i++) {          // count microseconds
+      TR0 = 0;                         // STOP Timer0
+      TH0 = (-SYSCLK/1000000) >> 8;    // set Timer0 to overflow in 1us
+      TL0 = -SYSCLK/1000000;
+      TR0 = 1;                         // START Timer0
+      while (TF0 == 0);                // wait for overflow
+      TF0 = 0;                         // clear overflow indicator
+   }
 }

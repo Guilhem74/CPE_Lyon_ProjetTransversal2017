@@ -44,7 +44,7 @@ void Set_GPIO(void)
 	P1MDOUT&=0xF3; // P1.2 P1.3 INT0 et INT1
 	P1|=0x70;
 	P3MDOUT|=0xD0;
-	P74OUT |= 0x30;
+	P74OUT |= 0x31;
 	//P0MDOUT
 	
 	P2MDOUT=0x00;//Force P2 en drain ouvert

@@ -60,6 +60,7 @@
   #include <CFG_Globale.h>
 #endif
 #include <stdlib.h>
+#include "SPI.h"
 #include "LIB_PROJET_T_ADC.h" 
 sbit BP = P3^7;     
 
@@ -106,24 +107,24 @@ void main(void) {
 		init_Serial_Buffer();   
 		init_Serial_Buffer_1();	
 		EA = 1;   
-
+SPI0_Init_Master();
 		serOutstring("\r\nINIT 8051 DONE\r\n");
 		Gen_Servo_Horizontal(0);
 				Gen_Servo_Vertical(0);
 
 	Ready_To_Continue();
 	
-		
+
 
 	while(1) {
-	
+										SPI_Send_Master_Write(WRITE_TO_SLAVE,"sAlopeerkiejfjnsdjfbijs\r");
+
 	  detection_obstacles(mode_detection,pas_angle_detection);
 		
 		SerialEvent1();
 		SerialEvent0();
 		if(Time_in_ms>Time_PAST+10)//Boucle de 10 ms min
 		{
-				
 			//sprintf(Envoi,"\r\nCapteur X:%d %d \r\n",distance_avant,distance_arriere);
 			//sprintf(Envoi,"\r\nCapteur Arriere:%d %d \r\n",distance_ultrason_arriere,distance_infrarouge_arriere);
 			Analyse_Deplacement();
