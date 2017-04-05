@@ -146,7 +146,7 @@ void Gen_Servo_Horizontal(int angle)
 {
 	if( (angle <= 90) && (angle >= -90) )
 	{
-		pulse_servo_H = (11*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
+		pulse_servo_H = (-11*angle+1500)/100; // definit le nombre d'overflow  de 0.1ms timer2 (durée pulse) correspondant à l'angle
 		// -90° = 0.9ms / 0° = 1.5ms / 90° = 2.1ms //
 		// Equation regi par le systeme : tpulse = 15 + angle*0.07 et on multiplie le tout par 1000 afin d'eviter les arrondis puis on redivise par 1000
 	}

@@ -13,6 +13,8 @@ extern int X_POS,Y_POS,A_POS,X_DEST,Y_DEST,A_DEST,A_FIN;
 extern char Mooving;
 extern char Params_Change;
 extern char Deplacement_Demande;
+extern int distance_avant ;
+extern int distance_avant_IR ; 
 void DeplacementContinu(int speed)
 {
 			char Envoi[40];
@@ -65,6 +67,7 @@ int Analyse_Deplacement()
  	if(X_POS!=X_DEST || Y_POS!=Y_DEST )
  	{//Mauvaise position XY, on calcule donc O optimal et on s'y place
  		A_DEST=atan2(Y_POS-Y_DEST,X_DEST-X_POS)* 180 / M_PI +90;
+		
  	}
  	else
  	{//Position XY bonne, on se met donc a l'angle voulu
@@ -83,7 +86,8 @@ int Analyse_Deplacement()
  			int dx=X_DEST-X_POS;
  			int dy=Y_DEST-Y_POS;
  			int Distance = sqrt(dx*dx+dy*dy);
-
+			if(distance_avant<Distance)
+				return 0;
  			if(Distance==0)
  			{//Rien a deplacer;
 				Params_Change=-1;//-1 Pour rien

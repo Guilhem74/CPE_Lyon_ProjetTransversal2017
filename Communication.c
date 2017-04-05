@@ -11,8 +11,8 @@ extern char Mooving;
 extern char Params_Change;
 extern char Deplacement_Demande;
 extern int intensite;
-extern int duree_allumage;
-extern int duree_extinction;
+extern   long int duree_allumage;
+extern   long int duree_extinction;
 extern int nb_cycles;
 extern char Ready;
 extern int launch_detection;
@@ -243,14 +243,16 @@ Ready=1;
 	}
 	else if(strcmp("G",First)==0)
 	{//Deplacement BR
+		
 		int Val1=0;
 		int Val2=0;
 		int Val3=0;
 		int Value_SS=sscanf(entree,"%s X:%d Y:%d A:%d",First,&Val1,&Val2,&Val3);
 		if(Value_SS==4)
-		{
-			X_DEST=Val1;
-			Y_DEST=Val2;
+		{// G X:0 Y:10 A:0
+			Gen_Servo_Horizontal(0);
+			X_DEST=Val1*10;
+			Y_DEST=Val2*10;
 			A_FIN=Val3;
 			Deplacement_Demande=1;
 			Retour=G;
@@ -357,12 +359,12 @@ Ready=1;
 		int Val4=0;
 		int Value_SS=sscanf(entree,"%s I:%d D:%d E:%d N:%d",First,&Val1,&Val2,&Val3,&Val4);
 		if(Value_SS==5)
-		{
+		{//L I:100 D:10 E:10 N:5
 			 intensite=Val1;
 			 duree_allumage=Val2;
 			duree_extinction=Val3;
 			nb_cycles=Val4;
-			
+
 			Retour=L;
 		}
 		else
@@ -371,7 +373,7 @@ Ready=1;
 			 duree_allumage=100;
 			duree_extinction=0;
 			nb_cycles=1;
-			
+
 			Retour=L;
 		}
 	}
@@ -389,7 +391,7 @@ Ready=1;
 		int Val2=0;
 		int Value_SS=sscanf(entree,"%s %s A:%d",First,&Val1,&Val2);
 		if(Val1=='V')
-		{
+		{// CS H A:90
 			//TODO Comm to slave
 			Gen_Servo_Vertical(Val2);
 			Time_Past_Servo =Time_in_ms;
@@ -461,6 +463,8 @@ Retour_Serializer Parseur_Uart_1(char entree[])
 		Mooving=0;
 		if(Params_Change==2)
 		{
+			X_DEST=0;
+			Y_DEST=0;
 			X_POS=X_DEST;
  			Y_POS=Y_DEST;
 		}
