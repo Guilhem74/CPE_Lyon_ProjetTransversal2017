@@ -13,8 +13,6 @@
 
 #ifndef __LIB_PROJET_T_Timers__
 #define __LIB_PROJET_T_Timers__
-
-#define SYSCLK 22118400
 //*****************************************************************************	 
 //CFG_Timers
 //
@@ -26,10 +24,6 @@ void CFG_Timers(void);
 void Config_Timer3(void);
 void Config_Timer2(void);
 void Config_Timer1(void);
-//Fonction Timer pour SPI
-void Timer0_Init (void);
-void Timer0_ms (unsigned ms);
-void Timer0_us (unsigned us);
 
 unsigned long int Conversion_horloge_en_centiemes();
 void Horloge_RTC(void);
