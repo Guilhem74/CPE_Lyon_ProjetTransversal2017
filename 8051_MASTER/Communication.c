@@ -251,8 +251,8 @@ Ready=1;
 		if(Value_SS==4)
 		{// G X:0 Y:10 A:0
 			Gen_Servo_Horizontal(0);
-			X_DEST=Val1*10;
-			Y_DEST=Val2*10;
+			X_DEST=Val1*1;
+			Y_DEST=Val2*1;
 			A_FIN=Val3;
 			Deplacement_Demande=1;
 			Retour=G;

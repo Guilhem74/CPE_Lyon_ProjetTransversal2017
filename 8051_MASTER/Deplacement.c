@@ -94,6 +94,12 @@ int Analyse_Deplacement()
 				if(Deplacement_Demande==1)
 				{
 					serOutstring("\r\nB");
+					X_POS=0;
+					Y_POS=0;
+					A_DEST=0;
+					A_POS=0;
+					X_DEST=0;
+					Y_DEST=0;
 					Ready_To_Continue();
 
 				Deplacement_Demande=0;
